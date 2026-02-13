@@ -1,5 +1,51 @@
 <!doctype html>
 <html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>CFD demo — Página para Vercel</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header>
+      <h1>CFD — Demo interactiva</h1>
+      <p>Visualización simple de campo de flujo y partículas. Ajusta parámetros y observa el comportamiento.</p>
+    </header>
+
+    <main>
+      <section class="controls">
+        <label>Tipo de campo:
+          <select id="fieldType">
+            <option value="vortex">Vórtice</option>
+            <option value="shear">Cizalla</option>
+            <option value="source">Fuente/Sumidero</option>
+          </select>
+        </label>
+
+        <label>Intensidad:
+          <input id="strength" type="range" min="0" max="4" step="0.01" value="1" />
+        </label>
+
+        <button id="resetBtn">Reiniciar partículas</button>
+      </section>
+
+      <canvas id="flowCanvas"></canvas>
+
+      <section class="info">
+        <h2>Sobre esta demo</h2>
+        <p>Esta página no es un solver CFD real; es una visualización educativa que muestra campos de velocidad 2D y advección de partículas para entender conceptos básicos de flujo.</p>
+      </section>
+    </main>
+
+    <footer>
+      <small>Desplegable en Vercel: simplemente sube este proyecto o usa la CLI de Vercel.</small>
+    </footer>
+
+    <script src="script.js"></script>
+  </body>
+</html>
+<!doctype html>
+<html lang="es">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
