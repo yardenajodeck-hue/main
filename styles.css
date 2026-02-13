@@ -1,8 +1,8 @@
 :root{--bg:#000000;--card:#0b0b0b;--accent:#56b6f0;--muted:#9aa6b2}
 *{box-sizing:border-box}
-html,body{height:100%;margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:linear-gradient(180deg,var(--bg),#000000);color:#dfe8f2;overflow:hidden}
-header{padding:20px;text-align:center}
-main{display:flex;flex-direction:column;align-items:center;gap:12px;padding:12px}
+html,body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#000000;color:#dfe8f2;min-height:100vh}
+header{padding:20px;text-align:center;background:linear-gradient(180deg,rgba(5,8,16,0.8),transparent)}
+main{display:flex;flex-direction:column;align-items:center;gap:12px;padding:12px 8px;min-height:100vh}
 .controls{display:flex;gap:12px;align-items:center;background:rgba(255,255,255,0.03);padding:8px;border-radius:8px}
 label{font-size:14px;color:var(--muted)}
 select,input[type=range]{margin-left:8px}
@@ -24,35 +24,44 @@ body::after{
 	animation: hueShift 30s linear infinite;
 }
 
-canvas{width:100%;max-width:960px;height:560px;background:transparent;border-radius:8px;display:block;box-shadow:0 12px 40px rgba(0,0,0,0.6);backdrop-filter:blur(2px)}
-.info{max-width:960px;background:rgba(255,255,255,0.02);padding:12px;border-radius:8px;color:var(--muted)}
-footer{padding:12px;text-align:center;color:var(--muted)}
+canvas{width:100%;max-width:960px;height:400px;background:rgba(5,8,16,0.4);border-radius:8px;display:block;box-shadow:0 12px 40px rgba(0,0,0,0.6)}
+.info{width:100%;max-width:960px;background:rgba(255,255,255,0.02);padding:12px;border-radius:8px;color:var(--muted)}
+footer{padding:12px;text-align:center;color:var(--muted);width:100%}
 
 @media(max-width:640px){canvas{height:360px}}
 
 /* estilos para sección interactiva calculadora CFD */
-.calculator{max-width:960px;margin:18px auto;padding:12px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border-radius:8px;color:#dfe8f2}
-.calc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
+.calculator{width:100%;max-width:960px;margin:18px auto;padding:12px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border-radius:8px;color:#dfe8f2}
+.calc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px}
 .calc-card{background:rgba(255,255,255,0.01);padding:12px;border-radius:6px;display:flex;flex-direction:column;gap:8px}
-.calc-card label{font-size:13px;color:var(--muted);display:flex;align-items:center}
-.calc-card input{margin-left:6px;padding:4px;background:#0a0a0a;border:1px solid rgba(86,182,240,0.3);border-radius:4px;color:#dfe8f2;flex:1;max-width:120px}
+.calc-card h3{margin:0 0 8px 0;font-size:14px}
+.calc-card label{font-size:12px;color:var(--muted);display:flex;flex-direction:column;gap:4px}
+.calc-card input{padding:4px;background:#0a0a0a;border:1px solid rgba(86,182,240,0.3);border-radius:4px;color:#dfe8f2}
 .calc-card button{padding:6px;background:var(--accent);border:none;border-radius:4px;color:#000;font-weight:600;cursor:pointer;transition:opacity 0.2s}
 .calc-card button:hover{opacity:0.8}
-.result{padding:8px;background:rgba(86,182,240,0.1);border-left:3px solid var(--accent);border-radius:4px;font-size:13px;color:#dfe8f2}
+.result{padding:8px;background:rgba(86,182,240,0.1);border-left:3px solid var(--accent);border-radius:4px;font-size:12px;color:#dfe8f2}
 
 /* simulador 1D */
-.simulator{max-width:960px;margin:18px auto;padding:12px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border-radius:8px;color:#dfe8f2}
-.sim-controls{display:flex;gap:12px;flex-wrap:wrap;align-items:center;font-size:13px}
-.sim-controls label{display:flex;align-items:center;gap:6px}
-.sim-controls input[type=range]{width:100px}
+.simulator{width:100%;max-width:960px;margin:18px auto;padding:12px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border-radius:8px;color:#dfe8f2}
+.sim-controls{display:flex;gap:12px;flex-wrap:wrap;align-items:center;font-size:12px;margin-bottom:8px}
+.sim-controls label{display:flex;align-items:center;gap:6px;flex:1;min-width:150px}
+.sim-controls input[type=range]{flex:1;min-width:80px}
 .sim-controls button{padding:6px 12px;background:var(--accent);border:none;border-radius:4px;color:#000;font-weight:600;cursor:pointer}
+.sim-controls button:hover{opacity:0.8}
 
 /* stencil */
-.stencil{max-width:960px;margin:18px auto;padding:12px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border-radius:8px;color:#dfe8f2}
+.stencil{width:100%;max-width:960px;margin:18px auto;padding:12px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border-radius:8px;color:#dfe8f2}
 .stencil-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
 .stencil-card{background:rgba(255,255,255,0.01);padding:8px;border-radius:6px;text-align:center}
-.stencil-card h4{margin:0 0 6px 0;font-size:13px}
-.stencil-card small{display:block;color:var(--muted);font-size:11px;margin-top:4px}
+.stencil-card h4{margin:0 0 6px 0;font-size:12px}
+.stencil-card small{display:block;color:var(--muted);font-size:10px;margin-top:4px}
+.stencil-card button{width:100%;padding:4px;background:var(--accent);border:none;border-radius:4px;color:#000;font-weight:600;cursor:pointer;font-size:11px}
+
+/* units */
+.units{width:100%;max-width:960px;margin:18px auto;padding:12px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border-radius:8px;color:#dfe8f2}
+.units details{margin:8px 0;padding:8px;border-radius:6px;background:rgba(255,255,255,0.01)}
+.units summary{font-weight:600;cursor:pointer;padding:6px;font-size:13px}
+.units pre{white-space:pre-wrap;font-size:12px;color:var(--muted)}
 
 /* estilos para sección de unidades (FAQ / apuntes) */
 .units{max-width:960px;margin:18px auto;padding:12px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border-radius:8px;color:#dfe8f2}
