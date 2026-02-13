@@ -1,70 +1,398 @@
-:root{--bg:#000000;--card:#0b0b0b;--accent:#56b6f0;--muted:#9aa6b2}
-*{box-sizing:border-box}
-html,body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#000000;color:#dfe8f2;min-height:100vh}
-header{padding:20px;text-align:center;background:linear-gradient(180deg,rgba(5,8,16,0.8),transparent)}
-main{display:flex;flex-direction:column;align-items:center;gap:12px;padding:12px 8px;min-height:100vh}
-.controls{display:flex;gap:12px;align-items:center;background:rgba(255,255,255,0.03);padding:8px;border-radius:8px}
-label{font-size:14px;color:var(--muted)}
-select,input[type=range]{margin-left:8px}
-/* animated subtle background */
-body::before{
-	content:"";
-	position:fixed;inset:0;z-index:-2;
-	background:radial-gradient(ellipse at 10% 20%, rgba(86,182,240,0.06), transparent 10%),
-						 radial-gradient(ellipse at 90% 80%, rgba(86,182,240,0.04), transparent 12%);
-	pointer-events:none;
+/* ===== VARIABLES Y BASE ===== */
+:root {
+  --accent: #56b6f0;
+  --muted: #9aa6b2;
 }
 
-@keyframes hueShift{from{filter:hue-rotate(0deg)}to{filter:hue-rotate(360deg)}}
-body::after{
-	content:"";
-	position:fixed;inset:-20%;z-index:-3;opacity:0.15;pointer-events:none;
-	background:linear-gradient(120deg,#001122 0%, #002233 50%, #001122 100%);
-	filter:blur(60px);
-	animation: hueShift 30s linear infinite;
+* {
+  box-sizing: border-box;
 }
 
-canvas{width:100%;max-width:960px;height:400px;background:rgba(5,8,16,0.4);border-radius:8px;display:block;box-shadow:0 12px 40px rgba(0,0,0,0.6)}
-.info{width:100%;max-width:960px;background:rgba(255,255,255,0.02);padding:12px;border-radius:8px;color:var(--muted)}
-footer{padding:12px;text-align:center;color:var(--muted);width:100%}
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: #000000;
+  color: #dfe8f2;
+  line-height: 1.6;
+}
 
-@media(max-width:640px){canvas{height:360px}}
+/* ===== FONDO ANIMADO ===== */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  background: radial-gradient(ellipse at 10% 20%, rgba(86, 182, 240, 0.06), transparent 10%),
+              radial-gradient(ellipse at 90% 80%, rgba(86, 182, 240, 0.04), transparent 12%);
+  pointer-events: none;
+}
 
-/* estilos para sección interactiva calculadora CFD */
-.calculator{width:100%;max-width:960px;margin:18px auto;padding:12px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border-radius:8px;color:#dfe8f2}
-.calc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px}
-.calc-card{background:rgba(255,255,255,0.01);padding:12px;border-radius:6px;display:flex;flex-direction:column;gap:8px}
-.calc-card h3{margin:0 0 8px 0;font-size:14px}
-.calc-card label{font-size:12px;color:var(--muted);display:flex;flex-direction:column;gap:4px}
-.calc-card input{padding:4px;background:#0a0a0a;border:1px solid rgba(86,182,240,0.3);border-radius:4px;color:#dfe8f2}
-.calc-card button{padding:6px;background:var(--accent);border:none;border-radius:4px;color:#000;font-weight:600;cursor:pointer;transition:opacity 0.2s}
-.calc-card button:hover{opacity:0.8}
-.result{padding:8px;background:rgba(86,182,240,0.1);border-left:3px solid var(--accent);border-radius:4px;font-size:12px;color:#dfe8f2}
+@keyframes hueShift {
+  from { filter: hue-rotate(0deg); }
+  to { filter: hue-rotate(360deg); }
+}
 
-/* simulador 1D */
-.simulator{width:100%;max-width:960px;margin:18px auto;padding:12px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border-radius:8px;color:#dfe8f2}
-.sim-controls{display:flex;gap:12px;flex-wrap:wrap;align-items:center;font-size:12px;margin-bottom:8px}
-.sim-controls label{display:flex;align-items:center;gap:6px;flex:1;min-width:150px}
-.sim-controls input[type=range]{flex:1;min-width:80px}
-.sim-controls button{padding:6px 12px;background:var(--accent);border:none;border-radius:4px;color:#000;font-weight:600;cursor:pointer}
-.sim-controls button:hover{opacity:0.8}
+body::after {
+  content: "";
+  position: fixed;
+  inset: -20%;
+  z-index: -3;
+  opacity: 0.15;
+  pointer-events: none;
+  background: linear-gradient(120deg, #001122 0%, #002233 50%, #001122 100%);
+  filter: blur(60px);
+  animation: hueShift 30s linear infinite;
+}
 
-/* stencil */
-.stencil{width:100%;max-width:960px;margin:18px auto;padding:12px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border-radius:8px;color:#dfe8f2}
-.stencil-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
-.stencil-card{background:rgba(255,255,255,0.01);padding:8px;border-radius:6px;text-align:center}
-.stencil-card h4{margin:0 0 6px 0;font-size:12px}
-.stencil-card small{display:block;color:var(--muted);font-size:10px;margin-top:4px}
-.stencil-card button{width:100%;padding:4px;background:var(--accent);border:none;border-radius:4px;color:#000;font-weight:600;cursor:pointer;font-size:11px}
+/* ===== LAYOUT PRINCIPAL ===== */
+header {
+  padding: 20px;
+  text-align: center;
+  width: 100%;
+  background: linear-gradient(180deg, rgba(5, 8, 16, 0.8), transparent);
+}
 
-/* units */
-.units{width:100%;max-width:960px;margin:18px auto;padding:12px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border-radius:8px;color:#dfe8f2}
-.units details{margin:8px 0;padding:8px;border-radius:6px;background:rgba(255,255,255,0.01)}
-.units summary{font-weight:600;cursor:pointer;padding:6px;font-size:13px}
-.units pre{white-space:pre-wrap;font-size:12px;color:var(--muted)}
+header h1 {
+  margin: 0 0 8px 0;
+  font-size: 28px;
+}
 
-/* estilos para sección de unidades (FAQ / apuntes) */
-.units{max-width:960px;margin:18px auto;padding:12px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border-radius:8px;color:#dfe8f2}
-.units details{margin:8px 0;padding:8px;border-radius:6px;background:rgba(255,255,255,0.01)}
-.units summary{font-weight:600;cursor:pointer;padding:6px}
-.units pre{white-space:pre-wrap;font-size:13px;color:var(--muted)}
+header p {
+  margin: 0;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  gap: 12px;
+  padding: 12px;
+}
+
+footer {
+  padding: 20px;
+  text-align: center;
+  color: var(--muted);
+  width: 100%;
+  font-size: 12px;
+}
+
+/* ===== CONTROLES ===== */
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.03);
+  padding: 12px;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 960px;
+}
+
+label {
+  font-size: 13px;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+select,
+input[type="range"],
+input[type="number"] {
+  padding: 4px 8px;
+  background: #0a0a0a;
+  border: 1px solid rgba(86, 182, 240, 0.3);
+  border-radius: 4px;
+  color: #dfe8f2;
+  font-size: 12px;
+}
+
+input[type="range"] {
+  min-width: 80px;
+}
+
+button {
+  padding: 6px 12px;
+  background: var(--accent);
+  border: none;
+  border-radius: 4px;
+  color: #000;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  font-size: 12px;
+}
+
+button:hover {
+  opacity: 0.8;
+}
+
+/* ===== CANVAS ===== */
+canvas {
+  width: 100%;
+  max-width: 960px;
+  height: 400px;
+  background: rgba(5, 8, 16, 0.4);
+  border-radius: 8px;
+  display: block;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+}
+
+/* ===== SECCIONES ===== */
+section {
+  width: 100%;
+  max-width: 960px;
+  margin: 12px auto;
+  padding: 12px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01));
+  border-radius: 8px;
+  color: #dfe8f2;
+}
+
+section h2 {
+  margin: 0 0 12px 0;
+  font-size: 18px;
+}
+
+section h3 {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+}
+
+/* ===== INFO ===== */
+.info {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.info p {
+  margin: 0;
+  font-size: 13px;
+}
+
+/* ===== CALCULADORA ===== */
+.calculator {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01));
+}
+
+.calc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 12px;
+}
+
+.calc-card {
+  background: rgba(255, 255, 255, 0.01);
+  padding: 12px;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.calc-card h3 {
+  margin: 0;
+  font-size: 13px;
+}
+
+.calc-card label {
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+}
+
+.calc-card input {
+  width: 100%;
+  max-width: none;
+}
+
+.result {
+  padding: 8px;
+  background: rgba(86, 182, 240, 0.1);
+  border-left: 3px solid var(--accent);
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+/* ===== SIMULADOR 1D ===== */
+.simulator {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01));
+}
+
+.sim-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  font-size: 12px;
+  margin-bottom: 8px;
+}
+
+.sim-controls label {
+  flex: 1;
+  min-width: 150px;
+}
+
+.sim-controls button {
+  padding: 6px 12px;
+}
+
+#sim1dCanvas {
+  width: 100%;
+  height: 300px;
+  margin-top: 8px;
+  border-radius: 6px;
+  background: rgba(5, 8, 16, 0.4);
+  display: block;
+}
+
+/* ===== STENCILS ===== */
+.stencil {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01));
+}
+
+.stencil-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.stencil-card {
+  background: rgba(255, 255, 255, 0.01);
+  padding: 8px;
+  border-radius: 6px;
+  text-align: center;
+}
+
+.stencil-card h4 {
+  margin: 0 0 6px 0;
+  font-size: 12px;
+}
+
+.stencil-card canvas {
+  width: 100%;
+  height: 120px;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 4px;
+  margin-bottom: 4px;
+}
+
+.stencil-card small {
+  display: block;
+  color: var(--muted);
+  font-size: 10px;
+  margin-top: 4px;
+}
+
+.stencil-card button {
+  width: 100%;
+  margin-top: 4px;
+  padding: 4px;
+}
+
+#convCanvas {
+  width: 100%;
+  height: 120px;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 4px;
+  margin-bottom: 8px;
+  display: block;
+}
+
+/* ===== UNIDADES / DETAILS ===== */
+.units {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01));
+}
+
+.units details {
+  margin: 8px 0;
+  padding: 8px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.01);
+}
+
+.units summary {
+  font-weight: 600;
+  cursor: pointer;
+  padding: 6px;
+  font-size: 12px;
+  user-select: none;
+}
+
+.units summary:hover {
+  color: var(--accent);
+}
+
+.units ol,
+.units ul {
+  margin: 8px 0;
+  padding-left: 20px;
+}
+
+.units li {
+  margin: 4px 0;
+  font-size: 12px;
+}
+
+.units strong {
+  color: var(--accent);
+}
+
+.units pre {
+  white-space: pre-wrap;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+/* ===== MEDIA QUERIES ===== */
+@media (max-width: 768px) {
+  header h1 {
+    font-size: 22px;
+  }
+
+  main {
+    padding: 8px;
+  }
+
+  section {
+    margin: 8px auto;
+  }
+
+  canvas {
+    height: 300px;
+  }
+
+  .controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  label {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  header h1 {
+    font-size: 18px;
+  }
+
+  .calc-grid,
+  .stencil-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sim-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  button {
+    width: 100%;
+  }
+}
