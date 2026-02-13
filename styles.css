@@ -1,13 +1,37 @@
-:root{--bg:#0b1221;--card:#0f1724;--accent:#56b6f0;--muted:#9aa6b2}
+:root{--bg:#000000;--card:#0b0b0b;--accent:#56b6f0;--muted:#9aa6b2}
 *{box-sizing:border-box}
-html,body{height:100%;margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:linear-gradient(180deg,var(--bg),#071029);color:#e6eef6}
+html,body{height:100%;margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:linear-gradient(180deg,var(--bg),#000000);color:#dfe8f2;overflow:hidden}
 header{padding:20px;text-align:center}
 main{display:flex;flex-direction:column;align-items:center;gap:12px;padding:12px}
 .controls{display:flex;gap:12px;align-items:center;background:rgba(255,255,255,0.03);padding:8px;border-radius:8px}
 label{font-size:14px;color:var(--muted)}
 select,input[type=range]{margin-left:8px}
-canvas{width:100%;max-width:960px;height:560px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);border-radius:8px;display:block}
+/* animated subtle background */
+body::before{
+	content:"";
+	position:fixed;inset:0;z-index:-2;
+	background:radial-gradient(ellipse at 10% 20%, rgba(86,182,240,0.06), transparent 10%),
+						 radial-gradient(ellipse at 90% 80%, rgba(86,182,240,0.04), transparent 12%);
+	pointer-events:none;
+}
+
+@keyframes hueShift{from{filter:hue-rotate(0deg)}to{filter:hue-rotate(360deg)}}
+body::after{
+	content:"";
+	position:fixed;inset:-20%;z-index:-3;opacity:0.15;pointer-events:none;
+	background:linear-gradient(120deg,#001122 0%, #002233 50%, #001122 100%);
+	filter:blur(60px);
+	animation: hueShift 30s linear infinite;
+}
+
+canvas{width:100%;max-width:960px;height:560px;background:transparent;border-radius:8px;display:block;box-shadow:0 12px 40px rgba(0,0,0,0.6);backdrop-filter:blur(2px)}
 .info{max-width:960px;background:rgba(255,255,255,0.02);padding:12px;border-radius:8px;color:var(--muted)}
 footer{padding:12px;text-align:center;color:var(--muted)}
 
 @media(max-width:640px){canvas{height:360px}}
+
+/* estilos para sección de unidades (FAQ / apuntes) */
+.units{max-width:960px;margin:18px auto;padding:12px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border-radius:8px;color:#dfe8f2}
+.units details{margin:8px 0;padding:8px;border-radius:6px;background:rgba(255,255,255,0.01)}
+.units summary{font-weight:600;cursor:pointer;padding:6px}
+.units pre{white-space:pre-wrap;font-size:13px;color:var(--muted)}
