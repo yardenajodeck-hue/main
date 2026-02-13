@@ -362,3 +362,149 @@ window.addEventListener('load', ()=>{
 resize();
 initParticles(800);
 requestAnimationFrame(step);
+
+// ====== INTERACTIVIDAD ADICIONAL Y EFECTOS ======
+(function(){
+  // Capítulos
+  const chapterBtns = document.querySelectorAll('.chapter-btn');
+  const chapters = document.querySelectorAll('.chapter');
+  function showChapter(id){
+    chapters.forEach(c=>c.classList.remove('active'));
+    const el = document.getElementById(id);
+    if(el) el.classList.add('active');
+    chapterBtns.forEach(b=>b.classList.toggle('active', b.dataset.chapter===id));
+  }
+  chapterBtns.forEach(btn=>{
+    btn.addEventListener('click', ()=> showChapter(btn.dataset.chapter));
+  });
+
+  // keyboard navigation (left/right)
+  let idx = 0;
+  function idxOfActive(){
+    const list = Array.from(chapterBtns);
+    return list.findIndex(b=>b.classList.contains('active'));
+  }
+  window.addEventListener('keydown', (e)=>{
+    const list = Array.from(chapterBtns);
+    if(e.key==='ArrowRight'){ idx = (idxOfActive()+1) % list.length; list[idx].click(); }
+    if(e.key==='ArrowLeft'){ idx = (idxOfActive()-1+list.length) % list.length; list[idx].click(); }
+  });
+
+  // Canvas mouse forces + confetti bursts
+  const canvasEl = document.getElementById('flowCanvas');
+  let mouse = {x:0,y:0,down:false};
+  const effects = [];
+
+  canvasEl.addEventListener('mousemove', (ev)=>{
+    const r = canvasEl.getBoundingClientRect();
+    mouse.x = ev.clientX - r.left;
+    mouse.y = ev.clientY - r.top;
+  });
+  canvasEl.addEventListener('mouseleave', ()=>{ mouse.x = -9999; mouse.y = -9999; });
+  canvasEl.addEventListener('mousedown', (ev)=>{
+    mouse.down = true;
+    spawnBurst(mouse.x, mouse.y);
+  });
+  window.addEventListener('mouseup', ()=> mouse.down = false);
+
+  function spawnBurst(x,y){
+    const colors = ['#00ff88','#00d9ff','#ff006e','#ffd166'];
+    for(let i=0;i<40;i++){
+      const ang = Math.random()*Math.PI*2;
+      const speed = Math.random()*4 + 1;
+      effects.push({x, y, vx: Math.cos(ang)*speed, vy: Math.sin(ang)*speed - 1.2, life: 1 + Math.random()*0.8, color: colors[i%colors.length], size: 3 + Math.random()*4, rot: Math.random()*360});
+    }
+  }
+
+  // integrate effects inside main step loop by monkey-patching step
+  const originalStep = step;
+  window.step = function(t){
+    // mouse influence on particles (simple repulsion)
+    if(mouse.x > -1000){
+      for(const p of particles){
+        const dx = p.x - mouse.x; const dy = p.y - mouse.y;
+        const d2 = dx*dx + dy*dy;
+        if(d2 < 16000){ // radius ~126
+          const d = Math.sqrt(d2) + 0.0001;
+          const force = (mouse.down? -2200 : -900) / (d2 + 400);
+          p.x += (dx/d) * force * 0.016;
+          p.y += (dy/d) * force * 0.016;
+          // small color trail aging
+          p.age = Math.max(0, p.age - 0.02);
+        }
+      }
+    }
+
+    // draw effects (confetti)
+    const ctxLocal = ctx; // same ctx
+    // call original step (which clears/fades background and draws particles)
+    originalStep(t);
+
+    // draw and update effects
+    ctxLocal.save();
+    ctxLocal.globalCompositeOperation = 'lighter';
+    for(let i=effects.length-1;i>=0;i--){
+      const e = effects[i];
+      e.vy += 0.06; // gravity
+      e.vx *= 0.995; e.vy *= 0.995;
+      e.x += e.vx; e.y += e.vy;
+      e.life -= 0.02;
+      ctxLocal.translate(e.x, e.y);
+      ctxLocal.rotate(e.rot * Math.PI/180);
+      ctxLocal.fillStyle = e.color + Math.floor(200*e.life).toString(16);
+      ctxLocal.fillRect(-e.size/2, -e.size/2, e.size, e.size);
+      ctxLocal.setTransform(1,0,0,1,0,0);
+      if(e.life <= 0) effects.splice(i,1);
+    }
+    ctxLocal.restore();
+
+    requestAnimationFrame(window.step);
+  };
+
+  // tarjeta divertida: al click lanzar emoji flotante
+  document.querySelectorAll('.chapter-card').forEach(card=>{
+    card.addEventListener('click', (ev)=>{
+      const emoji = ['✨','🔥','🌊','🌀','🚀'][Math.floor(Math.random()*5)];
+      const span = document.createElement('span');
+      span.textContent = emoji;
+      span.style.position = 'absolute';
+      const r = card.getBoundingClientRect();
+      span.style.left = (r.left + r.width/2) + 'px';
+      span.style.top = (r.top + r.height/2) + 'px';
+      span.style.fontSize = '28px';
+      span.style.pointerEvents = 'none';
+      span.style.transition = 'transform 900ms cubic-bezier(.2,.9,.2,1), opacity 900ms';
+      document.body.appendChild(span);
+      requestAnimationFrame(()=>{
+        span.style.transform = `translateY(-120px) translateX(${(Math.random()-0.5)*80}px) scale(1.4)`;
+        span.style.opacity = '0';
+      });
+      setTimeout(()=> span.remove(), 1000);
+    });
+  });
+
+  // ripple for buttons (dynamic)
+  document.querySelectorAll('button').forEach(btn=>{
+    btn.addEventListener('click', (e)=>{
+      const r = btn.getBoundingClientRect();
+      const ink = document.createElement('span');
+      ink.style.position = 'absolute';
+      ink.style.left = (e.clientX - r.left) + 'px';
+      ink.style.top = (e.clientY - r.top) + 'px';
+      ink.style.width = ink.style.height = '10px';
+      ink.style.background = 'rgba(255,255,255,0.18)';
+      ink.style.borderRadius = '50%';
+      ink.style.transform = 'translate(-50%,-50%) scale(0)';
+      ink.style.transition = 'transform 600ms ease-out, opacity 600ms';
+      ink.style.pointerEvents = 'none';
+      btn.style.position = 'relative';
+      btn.appendChild(ink);
+      requestAnimationFrame(()=> ink.style.transform = 'translate(-50%,-50%) scale(40)');
+      setTimeout(()=> ink.style.opacity = '0', 400);
+      setTimeout(()=> ink.remove(), 800);
+    });
+  });
+
+  // show intro by default
+  showChapter('intro');
+})();

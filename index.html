@@ -3,166 +3,394 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>CFD demo — Página para Vercel</title>
+    <title>CFD Demo — Plataforma Educativa</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <header>
-      <h1>CFD — Demo interactiva</h1>
-      <p>Visualización simple de campo de flujo y partículas. Ajusta parámetros y observa el comportamiento.</p>
+      <h1>CFD — Plataforma Educativa Interactiva</h1>
+      <p>Aprende Dinámica de Fluidos Computacional con herramientas interactivas</p>
     </header>
 
     <main>
-      <section class="controls">
-        <label>Tipo de campo:
-          <select id="fieldType">
-            <option value="vortex">Vórtice</option>
-            <option value="shear">Cizalla</option>
-            <option value="source">Fuente/Sumidero</option>
-          </select>
-        </label>
+      <!-- BARRA DE CAPÍTULOS -->
+      <nav class="chapters-nav">
+        <button class="chapter-btn active" data-chapter="intro">Intro</button>
+        <button class="chapter-btn" data-chapter="equations">Ecuaciones CFD</button>
+        <button class="chapter-btn" data-chapter="discretization">Discretización</button>
+        <button class="chapter-btn" data-chapter="meshes">Mallas</button>
+        <button class="chapter-btn" data-chapter="solvers">Solucionadores</button>
+        <button class="chapter-btn" data-chapter="visualization">Visualización</button>
+        <button class="chapter-btn" data-chapter="tools">Herramientas</button>
+      </nav>
 
-        <label>Intensidad:
-          <input id="strength" type="range" min="0" max="4" step="0.01" value="1" />
-        </label>
+      <!-- CONTENIDO POR CAPÍTULO -->
+      <div class="chapters-container">
 
-        <button id="resetBtn">Reiniciar partículas</button>
-      </section>
+        <!-- INTRO -->
+        <section id="intro" class="chapter active">
+          <h2>Introducción a CFD</h2>
+          <div class="chapter-content">
+            <div class="chapter-grid">
+              <div class="chapter-card">
+                <h3>¿Qué es CFD?</h3>
+                <p>CFD (Computational Fluid Dynamics) es la simulación numérica de fluidos. Resuelve ecuaciones de Navier-Stokes usando métodos numéricos en computadoras.</p>
+                <ul>
+                  <li>Modela flujo de aire, agua, gases</li>
+                  <li>Predice campos de velocidad, presión, temperatura</li>
+                  <li>Se usa en ingeniería aeroespacial, automoción, energía</li>
+                </ul>
+              </div>
 
-      <canvas id="flowCanvas"></canvas>
-
-      <section class="info">
-        <h2>Sobre esta demo</h2>
-        <p>Esta página no es un solver CFD real; es una visualización educativa que muestra campos de velocidad 2D y advección de partículas para entender conceptos básicos de flujo.</p>
-      </section>
-
-      <section class="calculator">
-        <h2>Calculadora CFD Interactiva</h2>
-        <div class="calc-grid">
-          <div class="calc-card">
-            <h3>Número de Reynolds</h3>
-            <label>Velocidad u (m/s): <input id="re-u" type="number" value="1" min="0.01" step="0.1" /></label>
-            <label>Longitud L (m): <input id="re-L" type="number" value="1" min="0.01" step="0.1" /></label>
-            <label>Viscosidad cinemática ν (m²/s): <input id="re-nu" type="number" value="1e-5" min="1e-7" step="1e-6" /></label>
-            <button id="calcRe">Calcular Re</button>
-            <div id="reResult" class="result"></div>
+              <div class="chapter-card">
+                <h3>Flujo Interactivo 2D</h3>
+                <p>Ajusta parámetros y observa el comportamiento del flujo en tiempo real:</p>
+                <div class="controls">
+                  <label>Tipo de campo:
+                    <select id="fieldType">
+                      <option value="vortex">Vórtice</option>
+                      <option value="shear">Cizalla</option>
+                      <option value="source">Fuente/Sumidero</option>
+                    </select>
+                  </label>
+                  <label>Intensidad:
+                    <input id="strength" type="range" min="0" max="4" step="0.01" value="1" />
+                  </label>
+                  <button id="resetBtn">Reiniciar</button>
+                </div>
+                <canvas id="flowCanvas" style="width:100%;height:350px;background:rgba(5,8,16,0.4);border-radius:6px;margin-top:8px;"></canvas>
+              </div>
+            </div>
           </div>
+        </section>
 
-          <div class="calc-card">
-            <h3>Número de Péclet</h3>
-            <label>Velocidad u (m/s): <input id="pe-u" type="number" value="1" min="0.01" step="0.1" /></label>
-            <label>Δx (m): <input id="pe-dx" type="number" value="0.01" min="0.001" step="0.001" /></label>
-            <label>Difusividad α (m²/s): <input id="pe-alpha" type="number" value="1e-5" min="1e-7" step="1e-6" /></label>
-            <button id="calcPe">Calcular Pe</button>
-            <div id="peResult" class="result"></div>
+        <!-- ECUACIONES CFD -->
+        <section id="equations" class="chapter">
+          <h2>Ecuaciones de Conservación</h2>
+          <div class="chapter-content">
+            <div class="chapter-grid">
+              <div class="chapter-card">
+                <h3>Ecuación de Continuidad (Masa)</h3>
+                <p>Expresa la conservación de masa en un volumen de control:</p>
+                <code>∂ρ/∂t + ∇·(ρu) = 0</code>
+                <p><strong>Significado:</strong> La masa no se crea ni se destruye; lo que entra menos lo que sale equals cambio temporal.</p>
+              </div>
+
+              <div class="chapter-card">
+                <h3>Ecuaciones de Momentum (Impulso)</h3>
+                <p>Describe cómo cambia la velocidad del fluido (2ª ley de Newton):</p>
+                <code>∂(ρu)/∂t + ∇·(ρu⊗u) = -∇p + ∇·τ + f</code>
+                <p>Relaciona: fuerzas (presión, viscosidad) con aceleración del fluido.</p>
+              </div>
+
+              <div class="chapter-card">
+                <h3>Ecuación de Energía</h3>
+                <p>Conservación de energía total (térmica + cinética):</p>
+                <code>∂(ρE)/∂t + ∇·(ρEu) = ∇·(k∇T) + ∇·(τ·u) + f·u + Q</code>
+                <p>Incluye: conducción térmica, disipación viscosa, fuentes externas.</p>
+              </div>
+
+              <div class="chapter-card">
+                <h3>Número de Reynolds</h3>
+                <p>Determina si el flujo es laminar o turbulento:</p>
+                <label>Calcular Re:
+                  <input id="re-u" type="number" placeholder="Velocidad u (m/s)" value="1" min="0.01" />
+                  <input id="re-L" type="number" placeholder="Longitud L (m)" value="1" min="0.01" />
+                  <input id="re-nu" type="number" placeholder="Viscosidad ν (m²/s)" value="1e-5" min="1e-7" />
+                  <button id="calcRe">Calcular</button>
+                </label>
+                <div id="reResult" class="result"></div>
+              </div>
+            </div>
           </div>
+        </section>
 
-        </div>
-      </section>
+        <!-- DISCRETIZACIÓN -->
+        <section id="discretization" class="chapter">
+          <h2>Métodos de Discretización</h2>
+          <div class="chapter-content">
+            <div class="chapter-grid">
+              <div class="chapter-card">
+                <h3>¿Qué es discretizar?</h3>
+                <p>Transformar ecuaciones continuas (PDEs) en sistemas algebraicos en nodos/celdas discretos:</p>
+                <ul>
+                  <li><strong>Espacio:</strong> Dividir dominio en malla (elementos finitos, volúmenes finitos)</li>
+                  <li><strong>Tiempo:</strong> Avanzar solución en pasos Δt</li>
+                  <li><strong>Variables:</strong> φ(x,t) → φᵢⁿ (valores en nodos)</li>
+                </ul>
+              </div>
 
-      <section class="simulator">
-        <h2>Simulador 1D: Advección-Difusión</h2>
-        <div class="sim-controls">
-          <label>Velocidad (u): <input id="sim-u" type="range" min="0" max="2" step="0.1" value="0.5" /></label>
-          <label>Difusividad (α): <input id="sim-alpha" type="range" min="0" max="0.1" step="0.01" value="0.02" /></label>
-          <label>Δt: <input id="sim-dt" type="range" min="0.001" max="0.1" step="0.001" value="0.01" /></label>
-          <button id="simStart">Iniciar</button>
-          <button id="simReset">Reiniciar</button>
-          <span id="simTime" style="font-size:12px;color:var(--muted);">t = 0</span>
-        </div>
-        <canvas id="sim1dCanvas" style="width:100%;height:300px;margin-top:8px;border-radius:6px;"></canvas>
-      </section>
+              <div class="chapter-card">
+                <h3>Visualizador de Stencils</h3>
+                <p>Plantillas de discretización por diferencias finitas:</p>
+                <div class="stencil-mini">
+                  <canvas id="stencil3Mini" style="width:100%;height:100px;background:rgba(255,255,255,0.02);border-radius:4px;"></canvas>
+                  <small>Central 3-point (2º orden)</small>
+                </div>
+              </div>
 
-      <section class="stencil">
-        <h2>Visualizador de Stencils (Plantillas de Discretización)</h2>
-        <div class="stencil-grid">
-          <div class="stencil-card">
-            <h4>Central 3-point (2º orden)</h4>
-            <canvas id="stencil3" style="width:100%;height:120px;background:rgba(255,255,255,0.02);border-radius:4px;"></canvas>
-            <small>$\phi' \approx (\phi_{i+1}-\phi_{i-1})/(2\Delta x)$</small>
+              <div class="chapter-card">
+                <h3>Número de Péclet</h3>
+                <p>Determina esquema óptimo (advección dominante vs difusión):</p>
+                <label>Pe = u·Δx/α:
+                  <input id="pe-u" type="number" placeholder="u (m/s)" value="1" min="0.01" />
+                  <input id="pe-dx" type="number" placeholder="Δx (m)" value="0.01" min="0.001" />
+                  <input id="pe-alpha" type="number" placeholder="α (m²/s)" value="1e-5" min="1e-7" />
+                  <button id="calcPe">Calcular</button>
+                </label>
+                <div id="peResult" class="result"></div>
+              </div>
+
+              <div class="chapter-card">
+                <h3>Simulador 1D: Advección-Difusión</h3>
+                <p>Observa cómo el fluido transporta (advecciona) y difunde una perturbación:</p>
+                <div class="sim-controls-mini">
+                  <label>u: <input id="sim-u" type="range" min="0" max="2" step="0.1" value="0.5" /></label>
+                  <label>α: <input id="sim-alpha" type="range" min="0" max="0.1" step="0.01" value="0.02" /></label>
+                  <button id="simStart">Iniciar</button>
+                  <button id="simReset">Reiniciar</button>
+                </div>
+                <canvas id="sim1dCanvas" style="width:100%;height:150px;background:rgba(5,8,16,0.4);border-radius:4px;margin-top:8px;"></canvas>
+              </div>
+            </div>
           </div>
-          <div class="stencil-card">
-            <h4>Central 5-point (4º orden)</h4>
-            <canvas id="stencil5" style="width:100%;height:120px;background:rgba(255,255,255,0.02);border-radius:4px;"></canvas>
-            <small>orden superior, más puntos</small>
+        </section>
+
+        <!-- MALLAS -->
+        <section id="meshes" class="chapter">
+          <h2>Generación de Mallas (Meshing)</h2>
+          <div class="chapter-content">
+            <div class="chapter-grid">
+              <div class="chapter-card">
+                <h3>Estructura de Malla</h3>
+                <p>La malla es la discretización espacial del dominio:</p>
+                <ul>
+                  <li><strong>Nodos:</strong> Puntos donde se calculan variables</li>
+                  <li><strong>Elementos:</strong> Triángulos, cuadriláteros, tetraedros</li>
+                  <li><strong>Celdas:</strong> Volúmenes de control (métodos FV)</li>
+                </ul>
+              </div>
+
+              <div class="chapter-card">
+                <h3>Tipos de Malla</h3>
+                <p><strong>Estructurada:</strong> Grilla regular (i,j,k), mejor para geometrías simples</p>
+                <p><strong>No estructurada:</strong> Elementos irregulares, flexible para geometrías complejas</p>
+                <p><strong>Híbrida:</strong> Combinación, refinada en bordes (capas límite)</p>
+              </div>
+
+              <div class="chapter-card">
+                <h3>Refinamiento de Malla</h3>
+                <p>Zonas críticas necesitan más resolución:</p>
+                <ul>
+                  <li>Bordes de objetos (capas límite)</li>
+                  <li>Zonas de gradiente alto (estelas, vórtices)</li>
+                  <li>Interfaces (multifase)</li>
+                </ul>
+              </div>
+
+              <div class="chapter-card">
+                <h3>Calidad de Malla</h3>
+                <p>Parámetros clave:</p>
+                <ul>
+                  <li><strong>Aspect Ratio:</strong> Relación largo/ancho de elementos</li>
+                  <li><strong>Skewness:</strong> Deformación del elemento (0=ideal, 1=degenera)</li>
+                  <li><strong>Crecimiento:</strong> Transición Δx gradual entre regiones</li>
+                </ul>
+              </div>
+            </div>
           </div>
-          <div class="stencil-card">
-            <h4>Upwind (1º orden)</h4>
-            <canvas id="stencilUp" style="width:100%;height:120px;background:rgba(255,255,255,0.02);border-radius:4px;"></canvas>
-            <small>$\phi' \approx (\phi_i-\phi_{i-1})/\Delta x$</small>
+        </section>
+
+        <!-- SOLUCIONADORES -->
+        <section id="solvers" class="chapter">
+          <h2>Métodos de Solución Numérica</h2>
+          <div class="chapter-content">
+            <div class="chapter-grid">
+              <div class="chapter-card">
+                <h3>Métodos Temporales</h3>
+                <p><strong>Explícito (Euler Forward):</strong></p>
+                <code>yⁿ⁺¹ = yⁿ + Δt·f(tⁿ, yⁿ)</code>
+                <p>Rápido pero requiere Δt pequeño (estable si CFL ≤ 1)</p>
+              </div>
+
+              <div class="chapter-card">
+                <h3>Implícitos y Crank-Nicolson</h3>
+                <p><strong>Implícito (Euler Backward):</strong></p>
+                <code>yⁿ⁺¹ = yⁿ + Δt·f(tⁿ⁺¹, yⁿ⁺¹)</code>
+                <p>Más estable; permite Δt grande pero costo computacional mayor</p>
+              </div>
+
+              <div class="chapter-card">
+                <h3>Runge-Kutta</h3>
+                <p>Múltiples etapas intermedias para mejor precisión:</p>
+                <ul>
+                  <li>RK2: Orden 2, balance precisión-costo</li>
+                  <li>RK3: Orden 3, muy usado en CFD</li>
+                  <li>RK4: Orden 4, más precisión</li>
+                </ul>
+              </div>
+
+              <div class="chapter-card">
+                <h3>Solvers Lineales</h3>
+                <p>Resuelven sistemas Ax = b en cada paso temporal:</p>
+                <ul>
+                  <li><strong>Directos:</strong> Gauss, LU (exactos, costosos)</li>
+                  <li><strong>Iterativos:</strong> GMRES, BiCG (aproximados, rápidos)</li>
+                  <li><strong>Precondicionadores:</strong> Aceleran convergencia</li>
+                </ul>
+              </div>
+
+              <div class="chapter-card">
+                <h3>Acoplamiento P-V</h3>
+                <p>Presión y velocidad están acopladas (Navier-Stokes):</p>
+                <ul>
+                  <li><strong>SIMPLE:</strong> Semi-implicit (segregado)</li>
+                  <li><strong>SIMPLEC:</strong> Mejorado</li>
+                  <li><strong>PISO:</strong> Implícito (acoplado)</li>
+                </ul>
+              </div>
+
+              <div class="chapter-card">
+                <h3>Criterios de Convergencia</h3>
+                <p>¿Cuándo terminar la simulación?</p>
+                <ul>
+                  <li>Residuales < 1e-6 (ecuaciones de momentum)</li>
+                  <li>Monitor de funciones (fuerzas, caudal)</li>
+                  <li>Energía numeracálculo estabilizada</li>
+                </ul>
+              </div>
+            </div>
           </div>
-          <div class="stencil-card">
-            <h4>Convergencia (log-log)</h4>
-            <canvas id="convCanvas" style="width:100%;height:120px;background:rgba(255,255,255,0.02);border-radius:4px;"></canvas>
-            <button id="calcConv" style="width:100%;margin-top:4px;">Graficar convergencia</button>
+        </section>
+
+        <!-- VISUALIZACIÓN -->
+        <section id="visualization" class="chapter">
+          <h2>Postproceso y Visualización</h2>
+          <div class="chapter-content">
+            <div class="chapter-grid">
+              <div class="chapter-card">
+                <h3>Herramientas de Visualización</h3>
+                <ul>
+                  <li><strong>ParaView:</strong> Código abierto, poderoso</li>
+                  <li><strong>Tecplot:</strong> Resultados profesionales</li>
+                  <li><strong>VisIt:</strong> Científico, paralelo</li>
+                  <li><strong>Python (Matplotlib, Paraview):</strong> Scripts personalizados</li>
+                </ul>
+              </div>
+
+              <div class="chapter-card">
+                <h3>Tipos de Gráficos</h3>
+                <ul>
+                  <li><strong>Contornos:</strong> Campos escalares (presión, T)</li>
+                  <li><strong>Vectores:</strong> Campos de velocidad</li>
+                  <li><strong>Streamlines:</strong> Líneas de corriente</li>
+                  <li><strong>Iso-superficies:</strong> Superficies de nivel</li>
+                  <li><strong>Gráficos 1D:</strong> Perfiles en cortes</li>
+                </ul>
+              </div>
+
+              <div class="chapter-card">
+                <h3>Análisis de Resultados</h3>
+                <p>Cálculos derivados:</p>
+                <ul>
+                  <li><strong>Fuerzas:</strong> Drag, lift (integrar presión, esfuerzo)</li>
+                  <li><strong>Vorticidad:</strong> ω = ∇ × u (rotación local)</li>
+                  <li><strong>Número de Mach:</strong> u/c (efectos compresibilidad)</li>
+                  <li><strong>Número Ec:</strong> Viscous dissipation</li>
+                </ul>
+              </div>
+
+              <div class="chapter-card">
+                <h3>Gráfico de Convergencia</h3>
+                <p>Observa cómo decrece el error con refinamiento de malla (log-log):</p>
+                <div style="background:rgba(255,255,255,0.02);padding:8px;border-radius:4px;text-align:center;">
+                  <button id="calcConv" style="width:100%;padding:8px;background:var(--accent);border:none;border-radius:4px;color:#000;font-weight:600;cursor:pointer;">Graficar Convergencia</button>
+                  <canvas id="convCanvas" style="width:100%;height:150px;margin-top:8px;"></canvas>
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <section class="units">
-        <h2>Unidades 2–5: Resumen y respuestas</h2>
+        <!-- HERRAMIENTAS -->
+        <section id="tools" class="chapter">
+          <h2>Software y Herramientas CFD</h2>
+          <div class="chapter-content">
+            <div class="chapter-grid">
+              <div class="chapter-card">
+                <h3>OpenFOAM</h3>
+                <p><strong>Código Abierto, Libre</strong></p>
+                <ul>
+                  <li>Solucionador CFD general</li>
+                  <li>Excelente para investigación</li>
+                  <li>Comunidad activa, documentación</li>
+                  <li>Curva de aprendizaje media-alta</li>
+                </ul>
+              </div>
 
-        <details open>
-          <summary>Unit 2 — Ejecución de una simulación CFD (pasos y ejemplos)</summary>
-          <ol>
-            <li><strong>Definición del problema:</strong> objetivo, hipótesis, propiedades del fluido (ej.: flujo incompresible, laminar o turbulento).</li>
-            <li><strong>Geometría y mallado:</strong> crear y refinar la malla; especificar zonas de refinamiento en bordes y gradientes.</li>
-            <li><strong>Modelado físico:</strong> seleccionar NS, modelos de turbulencia, condiciones frontera y propiedades termofísicas.</li>
-            <li><strong>Discretización:</strong> elegir esquema espacial/temporal (FV/FDM/FEM, upwind/central, explícito/implícito).</li>
-            <li><strong>Solución:</strong> configurar solvers, precondicionadores, criterios de convergencia y acoplamientos (presión–velocidad).</li>
-            <li><strong>Verificación y validación:</strong> pruebas de orden, comparación con soluciones analíticas o datos experimentales.</li>
-            <li><strong>Postproceso:</strong> cálculo de fuerzas, tasas de transferencia, visualización de vorticidad y trazado de líneas de corriente.</li>
-          </ol>
-        </details>
+              <div class="chapter-card">
+                <h3>SU2</h3>
+                <p><strong>Aerodinámica + Optimización</strong></p>
+                <ul>
+                  <li>Especializado en flujo compresible</li>
+                  <li>Adjoint para optimización</li>
+                  <li>Interfaz Python</li>
+                  <li>Gratuito y open-source</li>
+                </ul>
+              </div>
 
-        <details>
-          <summary>Unit 3 — Discretización 1D (ecuaciones, derivadas y discretización de temperatura)</summary>
-          <ul>
-            <li><strong>Ecuaciones 1D:</strong>
-              <ul>
-                <li>Masa: $\partial_t \rho + \partial_x(\rho u)=0$</li>
-                <li>Impulso: $\partial_t(\rho u)+\partial_x(\rho u^2)=-\partial_x p + \partial_x \tau_{xx}+\rho f_x$</li>
-                <li>Temperatura (ej.): $\rho c_p(\partial_t T + u\partial_x T)=k\partial_{xx}T + Q$</li>
-              </ul>
-            </li>
-            <li><strong>Continuo vs discreto:</strong> continuo = función $\phi(x)$; discreto = valores $\phi_i$ en nodos/celdas con truncation error.</li>
-            <li><strong>Derivadas por Taylor:</strong> primera derivada central: $(\phi_{i+1}-\phi_{i-1})/(2\Delta x)$; segunda derivada: $(\phi_{i+1}-2\phi_i+\phi_{i-1})/\Delta x^2$.</li>
-            <li><strong>Discretización ejemplo (advección–difusión explícita):</strong>
-              $$\frac{T_i^{n+1}-T_i^n}{\Delta t}+u\frac{T_i^n-T_{i-1}^n}{\Delta x}=\alpha\frac{T_{i+1}^n-2T_i^n+T_{i-1}^n}{\Delta x^2}$$
-            </li>
-            <li><strong>Integración:</strong> tras discretizar en espacio se integra en tiempo con métodos ODE (expl./impl./RK).</li>
-            <li><strong>Orden de exactitud:</strong> error de truncamiento ~ $O(\Delta x^p)$ → orden $p$.</li>
-            <li><strong>Estimación de orden:</strong> refinamiento de malla (grid convergence), Richardson extrapolation.</li>
-            <li><strong>Por qué separar errores:</strong> aclarar si la discrepancia es por modelo físico o por la numerics; optimizar coste.</li>
-            <li><strong>Cuantidades conservadas:</strong> masa, momento, energía (o especies).</li>
-            <li><strong>Dimensión mínima:</strong> 1D.</li>
-          </ul>
-        </details>
+              <div class="chapter-card">
+                <h3>ANSYS Fluent</h3>
+                <p><strong>Comercial, Industrial</strong></p>
+                <ul>
+                  <li>Amplio rango de física</li>
+                  <li>Interfaz gráfica completa</li>
+                  <li>Excellent soporte técnico</li>
+                  <li>Licencia cara</li>
+                </ul>
+              </div>
 
-        <details>
-          <summary>Unit 4 — Discretización en el tiempo (métodos y estabilidad)</summary>
-          <ul>
-            <li><strong>Explícito vs implícito:</strong> Euler forward $y^{n+1}=y^n+\Delta t f(t^n,y^n)$; Euler backward $y^{n+1}=y^n+\Delta t f(t^{n+1},y^{n+1})$.</li>
-            <li><strong>Crank–Nicolson:</strong> promedio trapezoidal, segundo orden: $y^{n+1}=y^n+\tfrac{\Delta t}{2}[f^n+f^{n+1}]$.</li>
-            <li><strong>Estabilidad y CFL/Péclet:</strong> condiciones de estabilidad limitan $\Delta t$ en métodos explícitos; Péclet $\mathrm{Pe}=u\Delta x/\nu$ y esquemas centrales pueden oscilar si $\mathrm{Pe}$ grande.</li>
-            <li><strong>Pseudocódigo implícito (lineal):</strong> resolver $(I-\Delta t A)y^{n+1}=y^n$ por solver directo/iterativo.</li>
-            <li><strong>Runge–Kutta:</strong> multiple stages; explícitos fáciles; implícitos estables pero costosos.</li>
-          </ul>
-        </details>
+              <div class="chapter-card">
+                <h3>Gmsh</h3>
+                <p><strong>Mallado 2D/3D</strong></p>
+                <ul>
+                  <li>Generador de mallas libre</li>
+                  <li>Scripts Python/C++</li>
+                  <li>CAD integration</li>
+                  <li>Ideal para proyectos educativos</li>
+                </ul>
+              </div>
 
-        <details>
-          <summary>Unit 5 — Discretización en el espacio (stencils y notación)</summary>
-          <ul>
-            <li><strong>Discretizar transporte:</strong> transformar derivadas continuas en operadores discretos (FD/FV/FEM) sobre nodos/celdas.</li>
-            <li><strong>Notación:</strong> celda central P, vecinos E (east), W (west), segmentos e/w.</li>
-            <li><strong>Stencil:</strong> conjunto de puntos usados para aproximar derivadas; tamaño → orden y acoplamiento numérico.</li>
-          </ul>
-        </details>
-      </section>
+              <div class="chapter-card">
+                <h3>ParaView</h3>
+                <p><strong>Visualización Científica</strong></p>
+                <ul>
+                  <li>Post-procesamiento poderoso</li>
+                  <li>Código abierto</li>
+                  <li>Paralelización</li>
+                  <li>Compatible con todos los solucionadores</li>
+                </ul>
+              </div>
+
+              <div class="chapter-card">
+                <h3>Recursos Educativos</h3>
+                <p><strong>Para aprender CFD:</strong></p>
+                <ul>
+                  <li><a href="https://www.cfd-online.com/" target="_blank">CFD Online</a> — Foros y tutoriales</li>
+                  <li><a href="https://openfoam.com/" target="_blank">OpenFOAM Oficial</a></li>
+                  <li><a href="https://su2code.github.io/" target="_blank">SU2 Docs</a></li>
+                  <li>Cursos online (Coursera, edX)</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </div>
     </main>
 
     <footer>
-      <small>Desplegable en Vercel: simplemente sube este proyecto o usa la CLI de Vercel.</small>
+      <small>CFD Demo — Plataforma Educativa Interactiva para Vercel</small>
     </footer>
 
     <script src="script.js"></script>
