@@ -515,3 +515,166 @@ initParticles();
 
 // start the optimized animation loop
 requestAnimationFrame(window.step);
+
+// ====== INTEGRACIÓN TEMPORAL: Explícito vs Implícito (difusión 1D) ======
+(()=>{
+  const Ti = {
+    nx: 100, dx: 1/100, alpha: 0.02, dt: 0.0005, substeps: 1,
+    T0: null, Texp: null, Timp: null, t: 0, running: false, errHistory: [],
+    runExplicit: true, runImplicit: true
+  };
+
+  function thomasSolve(a,b,c,d){ // a: lower (n-1), b: diag (n), c: upper (n-1), d: rhs (n)
+    const n = b.length;
+    const cp = new Array(n-1);
+    const dp = new Array(n);
+    cp[0] = c[0] / b[0];
+    dp[0] = d[0] / b[0];
+    for(let i=1;i<n-1;i++){
+      const m = b[i] - a[i-1]*cp[i-1];
+      cp[i] = c[i] / m;
+      dp[i] = (d[i] - a[i-1]*dp[i-1]) / m;
+    }
+    dp[n-1] = (d[n-1] - a[n-2]*dp[n-2]) / (b[n-1] - a[n-2]*cp[n-2]);
+    const x = new Array(n);
+    x[n-1] = dp[n-1];
+    for(let i=n-2;i>=0;i--) x[i] = dp[i] - cp[i]*x[i+1];
+    return x;
+  }
+
+  function initTimeInt(){
+    Ti.alpha = parseFloat(document.getElementById('ti-alpha').value) || 0.02;
+    Ti.nx = parseInt(document.getElementById('ti-nx').value) || 100;
+    Ti.dt = parseFloat(document.getElementById('ti-dt').value) || 0.0005;
+    Ti.substeps = parseInt(document.getElementById('ti-substeps').value) || 1;
+    Ti.runExplicit = document.getElementById('ti-runExplicit').checked;
+    Ti.runImplicit = document.getElementById('ti-runImplicit').checked;
+
+    Ti.dx = 1 / Ti.nx;
+    Ti.T0 = new Array(Ti.nx).fill(0);
+    const c = Math.floor(Ti.nx/2);
+    for(let i=0;i<Ti.nx;i++){
+      const r = (i - c) / (Ti.nx*0.06);
+      Ti.T0[i] = Math.exp(-r*r);
+    }
+    Ti.Texp = [...Ti.T0];
+    Ti.Timp = [...Ti.T0];
+    Ti.t = 0;
+    Ti.errHistory = [];
+    drawTimeFields();
+    drawErr();
+    updateTiInfo();
+  }
+
+  function stepExplicitOnce(){
+    const n = Ti.nx; const dx = Ti.dx; const r = Ti.alpha * Ti.dt / (dx*dx);
+    const T = Ti.Texp; const Tnew = new Array(n);
+    for(let i=1;i<n-1;i++){
+      Tnew[i] = T[i] + r*(T[i+1] - 2*T[i] + T[i-1]);
+    }
+    Tnew[0] = Tnew[1];
+    Tnew[n-1] = Tnew[n-2];
+    Ti.Texp = Tnew;
+  }
+
+  function stepImplicitOnce(){
+    const n = Ti.nx; const dx = Ti.dx; const r = Ti.alpha * Ti.dt / (dx*dx);
+    if(n<=2) return;
+    // build tridiagonal for interior nodes 1..n-2 (m = n-2)
+    const m = n-2;
+    const a = new Array(m-1).fill(-r);
+    const b = new Array(m).fill(1 + 2*r);
+    const c = new Array(m-1).fill(-r);
+    const d = new Array(m);
+    for(let i=0;i<m;i++) d[i] = Ti.Timp[i+1];
+    const x = thomasSolve(a,b,c,d);
+    const Tnew = new Array(n);
+    Tnew[0] = x[0];
+    for(let i=1;i<n-1;i++) Tnew[i] = x[i-1];
+    Tnew[n-1] = x[m-1];
+    // enforce mild Neumann at boundaries
+    Tnew[0] = Tnew[1]; Tnew[n-1] = Tnew[n-2];
+    Ti.Timp = Tnew;
+  }
+
+  function computeError(){
+    const n = Ti.nx; let s=0;
+    for(let i=0;i<n;i++){ const d = (Ti.Texp[i] - Ti.Timp[i]); s += d*d; }
+    return Math.sqrt(s / n);
+  }
+
+  function drawFieldToCanvas(id, T){
+    const canvas = document.getElementById(id);
+    const ctx = canvas.getContext('2d');
+    canvas.width = canvas.offsetWidth * devicePixelRatio;
+    canvas.height = canvas.offsetHeight * devicePixelRatio;
+    ctx.setTransform(1,0,0,1,0,0); ctx.scale(devicePixelRatio, devicePixelRatio);
+    const w = canvas.offsetWidth; const h = canvas.offsetHeight; const margin = 18;
+    ctx.clearRect(0,0,w,h);
+    ctx.fillStyle = 'rgba(0,0,0,0.22)'; ctx.fillRect(margin, margin, w-2*margin, h-2*margin);
+    ctx.strokeStyle = 'rgba(255,255,255,0.2)'; ctx.beginPath(); ctx.moveTo(margin, h-margin); ctx.lineTo(w-margin, h-margin); ctx.stroke();
+    const n = T.length; const maxT = Math.max(...T); const minT = Math.min(...T); const range = maxT - minT || 1;
+    ctx.strokeStyle = 'rgba(86,182,240,0.9)'; ctx.lineWidth = 2; ctx.beginPath();
+    for(let i=0;i<n;i++){ const x = margin + (i/n)*(w-2*margin); const y = h - margin - ((T[i]-minT)/range)*(h-2*margin); if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y); }
+    ctx.stroke();
+  }
+
+  function drawTimeFields(){ drawFieldToCanvas('ti-explicit-canvas', Ti.Texp); drawFieldToCanvas('ti-implicit-canvas', Ti.Timp); }
+
+  function drawErr(){
+    const c = document.getElementById('ti-err-canvas'); const ctx = c.getContext('2d');
+    c.width = c.offsetWidth * devicePixelRatio; c.height = c.offsetHeight * devicePixelRatio;
+    ctx.setTransform(1,0,0,1,0,0); ctx.scale(devicePixelRatio, devicePixelRatio);
+    const w = c.offsetWidth; const h = c.offsetHeight; ctx.clearRect(0,0,w,h);
+    ctx.fillStyle = 'rgba(0,0,0,0.06)'; ctx.fillRect(0,0,w,h);
+    // axes
+    ctx.strokeStyle = 'rgba(255,255,255,0.12)'; ctx.beginPath(); ctx.moveTo(36,h-24); ctx.lineTo(w-12,h-24); ctx.lineTo(w-12,12); ctx.stroke();
+    if(Ti.errHistory.length===0) return;
+    const maxErr = Math.max(...Ti.errHistory.map(p=>p.err));
+    const minErr = Math.min(...Ti.errHistory.map(p=>p.err));
+    const tmax = Ti.errHistory[Ti.errHistory.length-1].t || 1;
+    ctx.strokeStyle = 'rgba(255,120,80,0.9)'; ctx.lineWidth = 2; ctx.beginPath();
+    for(let i=0;i<Ti.errHistory.length;i++){ const p = Ti.errHistory[i]; const x = 36 + (p.t / tmax) * (w-60); const y = h-24 - ((p.err - minErr)/(maxErr - minErr || 1))*(h-40); if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y); }
+    ctx.stroke();
+  }
+
+  function updateTiInfo(){
+    const info = document.getElementById('ti-info');
+    const dt = Ti.dt; const dx = Ti.dx; const alpha = Ti.alpha;
+    const dtCrit = dx*dx/(2*alpha + 1e-12);
+    info.textContent = `nx=${Ti.nx}, dx=${dx.toFixed(4)}, dt=${dt} (CFL_approx limit ≈ ${dtCrit.toExponential(2)})`;
+    if(dt > dtCrit) info.style.color = '#ffb4b4'; else info.style.color = 'var(--muted)';
+  }
+
+  let tiAnimId = null;
+  function tiAnimate(){
+    if(!Ti.running){ tiAnimId = null; return; }
+    for(let s=0;s<Ti.substeps;s++){
+      if(Ti.runExplicit) stepExplicitOnce();
+      if(Ti.runImplicit) stepImplicitOnce();
+      Ti.t += Ti.dt;
+      const err = computeError();
+      Ti.errHistory.push({t: Ti.t, err});
+      if(Ti.errHistory.length > 400) Ti.errHistory.shift();
+    }
+    drawTimeFields(); drawErr();
+    tiAnimId = requestAnimationFrame(tiAnimate);
+  }
+
+  // UI bindings
+  window.addEventListener('load', ()=>{
+    initTimeInt();
+    document.getElementById('ti-start').addEventListener('click', ()=>{
+      Ti.running = !Ti.running;
+      if(Ti.running && !tiAnimId) tiAnimate();
+    });
+    document.getElementById('ti-reset').addEventListener('click', ()=>{ Ti.running = false; if(tiAnimId) cancelAnimationFrame(tiAnimId); initTimeInt(); });
+    ['ti-alpha','ti-nx','ti-dt','ti-substeps'].forEach(id=>{
+      const el = document.getElementById(id);
+      el.addEventListener('change', ()=>{ initTimeInt(); });
+    });
+    document.getElementById('ti-runExplicit').addEventListener('change', (e)=>{ Ti.runExplicit = e.target.checked; });
+    document.getElementById('ti-runImplicit').addEventListener('change', (e)=>{ Ti.runImplicit = e.target.checked; });
+  });
+
+})();

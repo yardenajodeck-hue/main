@@ -158,6 +158,50 @@
           </div>
         </section>
 
+        <!-- INTEGRACIÓN TEMPORAL -->
+        <section id="timeint" class="chapter">
+          <h2>Integración Temporal — Explícito vs Implícito</h2>
+          <div class="chapter-content">
+            <div class="chapter-grid">
+              <div class="chapter-card">
+                <h3>Comparación en tiempo real</h3>
+                <p>Simulación de la ecuación de difusión 1D: <code>∂T/∂t = α ∂²T/∂x²</code>. Compare esquema explícito (Forward Euler) y esquema implícito (Backward Euler).</p>
+                <div class="sim-controls">
+                  <label>α: <input id="ti-alpha" type="number" step="0.001" value="0.02" min="0.0001"/></label>
+                  <label>Δx (nx): <input id="ti-nx" type="number" step="1" value="100" min="20" max="500"/></label>
+                  <label>Δt: <input id="ti-dt" type="number" step="0.0001" value="0.0005" min="1e-6"/></label>
+                  <label>Substeps/frame: <input id="ti-substeps" type="number" step="1" value="1" min="1" max="10"/></label>
+                  <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;">
+                    <button id="ti-start">Iniciar/Pausar</button>
+                    <button id="ti-reset">Reiniciar</button>
+                    <label style="align-items:center;display:flex;gap:6px;"><input id="ti-runExplicit" type="checkbox" checked/> Explícito</label>
+                    <label style="align-items:center;display:flex;gap:6px;"><input id="ti-runImplicit" type="checkbox" checked/> Implícito</label>
+                  </div>
+                  <div id="ti-info" style="margin-top:8px;color:var(--muted);font-size:13px;"></div>
+                </div>
+              </div>
+
+              <div class="chapter-card" style="grid-column:span 2;">
+                <h3>Visualización lado a lado</h3>
+                <div style="display:flex;gap:12px;align-items:flex-start;">
+                  <div style="flex:1">
+                    <strong>Explícito</strong>
+                    <canvas id="ti-explicit-canvas" style="width:100%;height:140px;background:rgba(5,8,16,0.35);border-radius:4px;margin-top:8px;"></canvas>
+                  </div>
+                  <div style="flex:1">
+                    <strong>Implícito</strong>
+                    <canvas id="ti-implicit-canvas" style="width:100%;height:140px;background:rgba(5,8,16,0.35);border-radius:4px;margin-top:8px;"></canvas>
+                  </div>
+                </div>
+                <div style="margin-top:10px">
+                  <strong>Error (L2) vs tiempo</strong>
+                  <canvas id="ti-err-canvas" style="width:100%;height:120px;background:rgba(255,255,255,0.02);border-radius:4px;margin-top:8px;"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         <!-- MALLAS -->
         <section id="meshes" class="chapter">
           <h2>Generación de Mallas (Meshing)</h2>
