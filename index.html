@@ -20,6 +20,7 @@
         <button class="chapter-btn" data-chapter="discretization">Discretización</button>
         <button class="chapter-btn" data-chapter="meshes">Mallas</button>
         <button class="chapter-btn" data-chapter="solvers">Solucionadores</button>
+        <button class="chapter-btn" data-chapter="solutions">Solutions algorithms</button>
         <button class="chapter-btn" data-chapter="visualization">Visualización</button>
         <button class="chapter-btn" data-chapter="tools">Herramientas</button>
       </nav>
@@ -259,6 +260,146 @@
                   <li>Energía numeracálculo estabilizada</li>
                 </ul>
               </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SOLUTIONS ALGORITHMS -->
+        <section id="solutions" class="chapter">
+          <h2>Solutions algorithms</h2>
+          <div class="chapter-content">
+            <div class="chapter-grid">
+              <div class="chapter-card">
+                <h3>¿Por qué usar SIMPLE para flujos incompresibles?</h3>
+                <p>SIMPLE (Semi-Implicit Method for Pressure-Linked Equations) es un algoritmo segregado que resuelve iterativamente campos de velocidad y presión en flujos incompresibles. Se usa porque:</p>
+                <ul>
+                  <li>Transforma el problema acoplado presión-velocidad en pasos manejables (segregados).</li>
+                  <li>Permite usar solvers iterativos eficientes por campo (velocidad y presión por separado).</li>
+                  <li>Es robusto, fácil de implementar en mallas no estructuradas y ampliamente probado en ingeniería.</li>
+                </ul>
+              </div>
+
+              <div class="chapter-card">
+                <h3>Diagrama: SIMPLE (flujo)</h3>
+                <div style="text-align:center">
+                  <svg width="100%" height="160" viewBox="0 0 800 160" preserveAspectRatio="xMidYMid meet">
+                    <defs>
+                      <marker id="arr" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                        <path d="M0,0 L6,3 L0,6 z" fill="#00ff88" />
+                      </marker>
+                    </defs>
+                    <rect x="20" y="12" width="150" height="32" rx="6" fill="#001a12" stroke="#00ff88"/>
+                    <text x="95" y="33" fill="#dff" font-size="12" text-anchor="middle">Guess pressure p*</text>
+
+                    <rect x="200" y="12" width="150" height="32" rx="6" fill="#001a12" stroke="#00d9ff"/>
+                    <text x="275" y="33" fill="#dff" font-size="12" text-anchor="middle">Solve momentum → u*</text>
+
+                    <rect x="380" y="12" width="180" height="32" rx="6" fill="#001a12" stroke="#ff006e"/>
+                    <text x="470" y="33" fill="#dff" font-size="12" text-anchor="middle">Build pressure correction equation</text>
+
+                    <rect x="600" y="12" width="150" height="32" rx="6" fill="#001a12" stroke="#ffd166"/>
+                    <text x="675" y="33" fill="#dff" font-size="12" text-anchor="middle">Solve p' → update p, u</text>
+
+                    <line x1="170" y1="28" x2="200" y2="28" stroke="#00ff88" stroke-width="2" marker-end="url(#arr)" />
+                    <line x1="350" y1="28" x2="380" y2="28" stroke="#00d9ff" stroke-width="2" marker-end="url(#arr)" />
+                    <line x1="560" y1="28" x2="600" y2="28" stroke="#ff006e" stroke-width="2" marker-end="url(#arr)" />
+
+                    <rect x="320" y="80" width="260" height="44" rx="6" fill="#001a12" stroke="#56b6f0"/>
+                    <text x="450" y="105" fill="#dff" font-size="12" text-anchor="middle">Check convergence (residuals). If not converged repeat</text>
+                    <line x1="470" y1="80" x2="470" y2="64" stroke="#56b6f0" stroke-width="2" marker-end="url(#arr)"/>
+                    <line x1="90" y1="64" x2="90" y2="80" stroke="#56b6f0" stroke-width="2" marker-end="url(#arr)"/>
+                  </svg>
+                </div>
+              </div>
+
+              <div class="chapter-card">
+                <h3>Diferencias SIMPLE vs Fractional-step</h3>
+                <p>Resumen de diferencias:</p>
+                <ul>
+                  <li><strong>SIMPLE:</strong> método segregado estacionario que usa correcciones de presión; adecuado para solucionadores iterativos estacionarios y mallas variadas.</li>
+                  <li><strong>Fractional-step / Projection:</strong> normalmente usado en esquemas temporales para acoplar presión y velocidad avanzando en tiempo: se usa una ecuación intermedia para velocidad sin incompressibility y después se corrige con un paso de presión (proyección) para imponer ∇·u=0.</li>
+                  <li>Fractional-step es típicamente temporal y explícito/semimplícito; SIMPLE suele emplearse en soluciones estacionarias o pseudo-transitoria.</li>
+                  <li>SIMPLE construye y resuelve una ecuación de corrección de presión (segregado); fractional-step resuelve una ecuación de Poisson de presión derivada de la corrección de velocidad.</li>
+                </ul>
+              </div>
+
+              <div class="chapter-card">
+                <h3>Diagrama: Fractional-step (proyección)</h3>
+                <div style="text-align:center">
+                  <svg width="100%" height="160" viewBox="0 0 800 160" preserveAspectRatio="xMidYMid meet">
+                    <defs>
+                      <marker id="arr2" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                        <path d="M0,0 L6,3 L0,6 z" fill="#00d9ff" />
+                      </marker>
+                    </defs>
+                    <rect x="40" y="20" width="160" height="32" rx="6" fill="#08121a" stroke="#00d9ff"/>
+                    <text x="120" y="42" fill="#dff" font-size="12" text-anchor="middle">Predictor: solve momentum (u*)</text>
+
+                    <rect x="260" y="20" width="220" height="32" rx="6" fill="#08121a" stroke="#00ff88"/>
+                    <text x="370" y="42" fill="#dff" font-size="12" text-anchor="middle">Solve Poisson for pressure (∇²p' = ...)</text>
+
+                    <rect x="520" y="20" width="200" height="32" rx="6" fill="#08121a" stroke="#ff006e"/>
+                    <text x="620" y="42" fill="#dff" font-size="12" text-anchor="middle">Correct velocity: u^{n+1} = u* - ∇p'</text>
+
+                    <line x1="200" y1="36" x2="260" y2="36" stroke="#00d9ff" stroke-width="2" marker-end="url(#arr2)" />
+                    <line x1="480" y1="36" x2="520" y2="36" stroke="#00ff88" stroke-width="2" marker-end="url(#arr2)" />
+                  </svg>
+                </div>
+              </div>
+
+              <div class="chapter-card">
+                <h3>Linealización</h3>
+                <p>La linealización es la aproximación de términos no lineales por expresiones lineales respecto a la variable desconocida dentro de una iteración — por ejemplo evaluar el término convectivo ρ(u·∇)u usando valores conocidos de la iteración anterior para convertir la ecuación en una forma lineal que pueda resolverse con métodos lineales.</p>
+              </div>
+
+              <div class="chapter-card">
+                <h3>Condición en presión para flujos incompresibles</h3>
+                <p>Para incompresible se debe imponer que la velocidad resultante sea divergencia-cero (∇·u = 0). La presión actúa como multiplicador de Lagrange para imponer esa restricción. Además la presión en problemas incompresibles es única salvo una constante aditiva (se debe fijar una referencia).</p>
+              </div>
+
+              <div class="chapter-card">
+                <h3>¿Qué es un residual?</h3>
+                <p>El residual es la discrepancia al evaluar la ecuación discreta con la solución aproximada: r = b - A x. Indica cuánto queda por resolver. En iterativos se monitoriza para decidir convergencia.</p>
+              </div>
+
+              <div class="chapter-card">
+                <h3>Orígenes y control de residuals</h3>
+                <ul>
+                  <li>Origenes: discretización (truncation error), condiciones de frontera incompatibles, acoplamiento mal tratado entre ecuaciones, errores de redondeo y solvers inexactos.</li>
+                  <li>Control: refinamiento de malla/tiempo, mejores solvers/precondicionadores, pasos de relajación (under-relaxation), corrección consistente de presión (Rhie–Chow), y criterios de convergencia estrictos.</li>
+                </ul>
+              </div>
+
+              <div class="chapter-card">
+                <h3>Desacoplamiento potencial entre momentum y presión</h3>
+                <p>Si la presión y velocidad se resuelven de forma independiente sin una corrección consistente, la ecuación de continuidad puede no satisfacerse, provocando soluciones no físicas. Ejemplos: esquemas centrales para presión en mallas colocalizadas pueden producir checkerboarding; usar interpolación Rhie–Chow o mallas staggered evita el problema.</p>
+              </div>
+
+              <div class="chapter-card">
+                <h3>Origen de "checkerboarding" y prevención</h3>
+                <p>Checkerboarding es una oscilación de presión/velocidad con patrón alternado (alta-baja) causada por acoplamiento insuficiente entre presión y velocidad en mallas colocalizadas y esquemas centrados. Prevención:</p>
+                <ul>
+                  <li>Usar malla staggered (centros y caras separadas) — elimina el modo nulo.</li>
+                  <li>Aplicar interpolación Rhie–Chow en arreglos colocalizados para introducir términos de amortiguamiento numérico consistente.</li>
+                  <li>Incrementar acoplamiento o usar solver acoplado (según caso).</li>
+                </ul>
+              </div>
+
+              <div class="chapter-card">
+                <h3>Ventajas / Desventajas: Colocado vs Staggered</h3>
+                <p><strong>Staggered (desfasado):</strong></p>
+                <ul>
+                  <li>+ Evita checkerboarding naturalmente.</li>
+                  <li>+ Mejor acoplamiento presión-velocidad en FV.</li>
+                  <li>- Implementación y manejo de datos más compleja, especialmente en mallas no estructuradas.</li>
+                </ul>
+                <p><strong>Collocated (colocado):</strong></p>
+                <ul>
+                  <li>+ Estructura de datos más simple, fácil de implementar en mallas arbitrarias.</li>
+                  <li>- Requiere técnicas adicionales (Rhie–Chow, estabilización) para evitar checkerboarding y acoplar correctamente.</li>
+                </ul>
+              </div>
+
             </div>
           </div>
         </section>
