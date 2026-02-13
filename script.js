@@ -7,6 +7,7 @@ function initApp(){
   initFlowAnimation();
   initCalculators();
   initStencils();
+  initSimpleSimulator();
   initTimeIntegration();
   initNavigation();
 }
@@ -149,6 +150,201 @@ function drawStencil(canvas, points){
     ctx.beginPath();
     ctx.arc(x, centerY, 6, 0, Math.PI*2);
     ctx.fill();
+  }
+}
+
+// ===== SIMULADOR RÁPIDO =====
+function initSimpleSimulator(){
+  const Simp = {
+    T: [], T0: [], alpha: 0.01, dt: 0.0003, nx: 100, dx: 1/100,
+    amp: 1, initFunc: 'gaussian', t: 0, running: false, animId: null
+  };
+
+  function initFunc(){
+    Simp.alpha = parseFloat(document.getElementById('simpl-alpha-slider')?.value) || 0.01;
+    Simp.dt = parseFloat(document.getElementById('simpl-dt-slider')?.value) || 0.0003;
+    Simp.nx = parseInt(document.getElementById('simpl-nx-slider')?.value) || 100;
+    Simp.amp = parseFloat(document.getElementById('simpl-amplitude')?.value) || 1;
+    Simp.initFunc = document.getElementById('simpl-init-func')?.value || 'gaussian';
+    
+    Simp.dx = 1/Simp.nx;
+    Simp.T0 = new Array(Simp.nx).fill(0);
+    
+    // Generar función inicial según selección
+    if(Simp.initFunc === 'gaussian'){
+      const c = Math.floor(Simp.nx/2);
+      for(let i=0; i<Simp.nx; i++){
+        const r = (i-c)/(Simp.nx*0.06);
+        Simp.T0[i] = Simp.amp * Math.exp(-r*r);
+      }
+    } else if(Simp.initFunc === 'square'){
+      const q = Math.floor(Simp.nx/4);
+      for(let i=q; i<3*q; i++) Simp.T0[i] = Simp.amp;
+    } else if(Simp.initFunc === 'ramp'){
+      for(let i=0; i<Simp.nx; i++){
+        Simp.T0[i] = Simp.amp * (i/Simp.nx);
+      }
+    } else if(Simp.initFunc === 'sine'){
+      for(let i=0; i<Simp.nx; i++){
+        Simp.T0[i] = Simp.amp * Math.sin(Math.PI*i/Simp.nx);
+      }
+    }
+    
+    Simp.T = [...Simp.T0];
+    Simp.t = 0;
+    Simp.running = false;
+    drawSimple();
+    updateSimpleInfo();
+  }
+
+  function stepOnce(){
+    const n = Simp.nx;
+    const r = Simp.alpha*Simp.dt/(Simp.dx*Simp.dx);
+    const T = Simp.T;
+    const Tnew = new Array(n);
+    for(let i=1; i<n-1; i++){
+      Tnew[i] = T[i] + r*(T[i+1]-2*T[i]+T[i-1]);
+    }
+    Tnew[0] = Tnew[1];
+    Tnew[n-1] = Tnew[n-2];
+    Simp.T = Tnew;
+    Simp.t += Simp.dt;
+  }
+
+  function drawSimple(){
+    const canvas = document.getElementById('simpl-canvas');
+    if(!canvas) return;
+    const ctx = canvas.getContext('2d');
+    canvas.width = canvas.offsetWidth * devicePixelRatio;
+    canvas.height = canvas.offsetHeight * devicePixelRatio;
+    ctx.setTransform(1,0,0,1,0,0);
+    ctx.scale(devicePixelRatio, devicePixelRatio);
+    
+    const w = canvas.offsetWidth;
+    const h = canvas.offsetHeight;
+    const margin = 30;
+    
+    ctx.fillStyle = 'rgba(0,0,0,0.2)';
+    ctx.fillRect(0,0,w,h);
+    
+    // Ejes
+    ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(margin, h-margin);
+    ctx.lineTo(w-margin, h-margin);
+    ctx.stroke();
+    
+    ctx.beginPath();
+    ctx.moveTo(margin, margin);
+    ctx.lineTo(margin, h-margin);
+    ctx.stroke();
+    
+    // Dibuja líneas de referencia
+    for(let i=1; i<5; i++){
+      const y = h-margin - (i/5)*(h-2*margin);
+      ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+      ctx.beginPath();
+      ctx.moveTo(margin, y);
+      ctx.lineTo(w-margin, y);
+      ctx.stroke();
+    }
+    
+    // Dibuja la función
+    const maxT = Math.max(...Simp.T0);
+    const range = maxT || 1;
+    
+    ctx.strokeStyle = 'rgba(86,182,240,0.9)';
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    for(let i=0; i<Simp.nx; i++){
+      const x = margin + (i/Simp.nx)*(w-2*margin);
+      const y = h-margin - (Simp.T[i]/range)*(h-2*margin);
+      if(i===0) ctx.moveTo(x,y);
+      else ctx.lineTo(x,y);
+    }
+    ctx.stroke();
+    
+    // Dibuja función inicial en gris
+    ctx.strokeStyle = 'rgba(255,255,255,0.25)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([4,4]);
+    ctx.beginPath();
+    for(let i=0; i<Simp.nx; i++){
+      const x = margin + (i/Simp.nx)*(w-2*margin);
+      const y = h-margin - (Simp.T0[i]/range)*(h-2*margin);
+      if(i===0) ctx.moveTo(x,y);
+      else ctx.lineTo(x,y);
+    }
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  function updateSimpleInfo(){
+    const info = document.getElementById('simpl-info');
+    const r = Simp.alpha*Simp.dt/(Simp.dx*Simp.dx);
+    const stability = r <= 0.5 ? '✓ Estable' : '⚠️ INESTABLE';
+    if(info) info.textContent = `t=${Simp.t.toFixed(4)}, r=${r.toFixed(3)} [${stability}] | Función inicial: ${Simp.initFunc}`;
+  }
+
+  function animate(){
+    if(!Simp.running){ Simp.animId = null; return; }
+    stepOnce();
+    drawSimple();
+    updateSimpleInfo();
+    Simp.animId = requestAnimationFrame(animate);
+  }
+
+  if(document.getElementById('simpl-canvas')){
+    initFunc();
+    
+    const startBtn = document.getElementById('simpl-start');
+    const resetBtn = document.getElementById('simpl-reset');
+    
+    if(startBtn){
+      startBtn.addEventListener('click', ()=>{
+        Simp.running = !Simp.running;
+        startBtn.textContent = Simp.running ? '⏸ Pausar' : '▶ Ejecutar';
+        if(Simp.running && !Simp.animId) animate();
+      });
+    }
+    
+    if(resetBtn){
+      resetBtn.addEventListener('click', ()=>{
+        Simp.running = false;
+        if(Simp.animId) cancelAnimationFrame(Simp.animId);
+        startBtn.textContent = '▶ Ejecutar';
+        initFunc();
+      });
+    }
+    
+    // Sliders con feedback en tiempo real
+    ['simpl-alpha-slider', 'simpl-dt-slider', 'simpl-nx-slider', 'simpl-amplitude', 'simpl-init-func'].forEach(id=>{
+      const el = document.getElementById(id);
+      if(el){
+        el.addEventListener('change', ()=>{
+          Simp.running = false;
+          startBtn.textContent = '▶ Ejecutar';
+          if(Simp.animId) cancelAnimationFrame(Simp.animId);
+          initFunc();
+        });
+        el.addEventListener('input', ()=>{
+          // Actualizar labels
+          if(id === 'simpl-alpha-slider'){
+            const val = document.getElementById('simpl-alpha-val');
+            if(val) val.textContent = parseFloat(el.value).toFixed(4);
+          }
+          if(id === 'simpl-dt-slider'){
+            const val = document.getElementById('simpl-dt-val');
+            if(val) val.textContent = parseFloat(el.value).toFixed(5);
+          }
+          if(id === 'simpl-nx-slider'){
+            const val = document.getElementById('simpl-nx-val');
+            if(val) val.textContent = el.value;
+          }
+        });
+      }
+    });
   }
 }
 
