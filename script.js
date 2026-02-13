@@ -521,7 +521,7 @@ requestAnimationFrame(window.step);
   const Ti = {
     nx: 100, dx: 1/100, alpha: 0.02, dt: 0.0005, substeps: 1,
     T0: null, Texp: null, Timp: null, t: 0, running: false, errHistory: [],
-    runExplicit: true, runImplicit: true
+    runExplicit: true, runImplicit: true, expOscillating: false, expPrevMax: 0
   };
 
   function thomasSolve(a,b,c,d){ // a: lower (n-1), b: diag (n), c: upper (n-1), d: rhs (n)
@@ -561,9 +561,12 @@ requestAnimationFrame(window.step);
     Ti.Timp = [...Ti.T0];
     Ti.t = 0;
     Ti.errHistory = [];
+    Ti.expOscillating = false;
+    Ti.expPrevMax = 0;
     drawTimeFields();
     drawErr();
     updateTiInfo();
+    updateStatus();
   }
 
   function stepExplicitOnce(){
@@ -601,6 +604,23 @@ requestAnimationFrame(window.step);
     const n = Ti.nx; let s=0;
     for(let i=0;i<n;i++){ const d = (Ti.Texp[i] - Ti.Timp[i]); s += d*d; }
     return Math.sqrt(s / n);
+  }
+
+  function detectOscillations(){
+    // Detecta si la solución explícita está oscilando (crecimiento de amplitud)
+    const maxT = Math.max(...Ti.Texp);
+    const isOscillating = maxT > Ti.expPrevMax * 1.5 && Ti.t > 0.001; // Crecimiento rápido = inestabilidad
+    Ti.expOscillating = isOscillating;
+    Ti.expPrevMax = maxT;
+    
+    // Mostrar advertencia
+    const warning = document.getElementById('ti-warning');
+    const r = Ti.alpha * Ti.dt / (Ti.dx * Ti.dx);
+    if(r > 0.5 && Ti.running) {
+      warning.style.display = 'block';
+    } else {
+      warning.style.display = 'none';
+    }
   }
 
   function drawFieldToCanvas(id, T){
@@ -656,9 +676,33 @@ requestAnimationFrame(window.step);
       const err = computeError();
       Ti.errHistory.push({t: Ti.t, err});
       if(Ti.errHistory.length > 400) Ti.errHistory.shift();
+      detectOscillations();
     }
-    drawTimeFields(); drawErr();
+    drawTimeFields(); drawErr(); updateStatus();
     tiAnimId = requestAnimationFrame(tiAnimate);
+  }
+
+  function updateStatus(){
+    const r = Ti.alpha * Ti.dt / (Ti.dx * Ti.dx);
+    const expStatus = document.getElementById('ti-expStatus');
+    const impStatus = document.getElementById('ti-impStatus');
+    
+    if(Ti.running){
+      if(r > 0.5){
+        expStatus.textContent = `⚠️ INESTABLE (r=${r.toFixed(3)} > 0.5)`;
+        expStatus.style.color = '#ffb4b4';
+      } else {
+        expStatus.textContent = `✓ Estable (r=${r.toFixed(3)} ≤ 0.5)`;
+        expStatus.style.color = '#00ff88';
+      }
+      impStatus.textContent = `✓ Siempre Estable (r=${r.toFixed(3)})`;
+      impStatus.style.color = '#00d9ff';
+    } else {
+      expStatus.textContent = 'Status: listo';
+      impStatus.textContent = 'Status: listo';
+      expStatus.style.color = 'var(--muted)';
+      impStatus.style.color = 'var(--muted)';
+    }
   }
 
   // UI bindings
@@ -667,8 +711,14 @@ requestAnimationFrame(window.step);
     document.getElementById('ti-start').addEventListener('click', ()=>{
       Ti.running = !Ti.running;
       if(Ti.running && !tiAnimId) tiAnimate();
+      updateStatus();
     });
-    document.getElementById('ti-reset').addEventListener('click', ()=>{ Ti.running = false; if(tiAnimId) cancelAnimationFrame(tiAnimId); initTimeInt(); });
+    document.getElementById('ti-reset').addEventListener('click', ()=>{ 
+      Ti.running = false; 
+      if(tiAnimId) cancelAnimationFrame(tiAnimId); 
+      document.getElementById('ti-warning').style.display = 'none';
+      initTimeInt(); 
+    });
     ['ti-alpha','ti-nx','ti-dt','ti-substeps'].forEach(id=>{
       const el = document.getElementById(id);
       el.addEventListener('change', ()=>{ initTimeInt(); });

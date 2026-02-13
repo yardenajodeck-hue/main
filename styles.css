@@ -321,6 +321,12 @@ footer {
   border-left: 3px solid var(--accent);
 }
 
+.chapter-card hr {
+  border: 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  margin: 10px 0;
+}
+
 .chapter-card a {
   color: var(--accent3);
   text-decoration: none;
