@@ -154,10 +154,10 @@ footer {
 
 .chapter-btn {
   padding: 10px 20px;
-  background: linear-gradient(135deg, rgba(0, 255, 136, 0.2), rgba(0, 217, 255, 0.2));
-  border: 2px solid var(--accent);
+  background: linear-gradient(135deg, rgba(255, 0, 110, 0.2), rgba(255, 100, 180, 0.2));
+  border: 2px solid var(--accent2);
   border-radius: 25px;
-  color: var(--accent);
+  color: var(--accent2);
   font-weight: 600;
   cursor: pointer;
   transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
@@ -183,17 +183,17 @@ footer {
 }
 
 .chapter-btn:hover {
-  background: linear-gradient(135deg, var(--accent), var(--accent3));
-  color: #000;
-  box-shadow: 0 0 30px rgba(0, 255, 136, 0.6), 0 0 60px rgba(0, 217, 255, 0.3);
+  background: linear-gradient(135deg, var(--accent2), #ff5fa5);
+  color: #fff;
+  box-shadow: 0 0 30px rgba(255, 0, 110, 0.6), 0 0 60px rgba(255, 100, 180, 0.3);
   transform: translateY(-3px) scale(1.05);
   text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }
 
 .chapter-btn.active {
-  background: linear-gradient(135deg, var(--accent), var(--accent3));
-  color: #000;
-  box-shadow: 0 0 30px rgba(0, 255, 136, 0.8), 0 0 60px rgba(0, 217, 255, 0.5);
+  background: linear-gradient(135deg, var(--accent2), #ff5fa5);
+  color: #fff;
+  box-shadow: 0 0 30px rgba(255, 0, 110, 0.8), 0 0 60px rgba(255, 100, 180, 0.5);
   transform: scale(1.1);
   text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }
@@ -377,10 +377,10 @@ footer {
 /* ===== BOTONES ===== */
 button {
   padding: 10px 20px;
-  background: linear-gradient(135deg, var(--accent), var(--accent3));
+  background: linear-gradient(135deg, var(--accent2), #ff5fa5);
   border: none;
   border-radius: 8px;
-  color: #000;
+  color: #fff;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
@@ -411,7 +411,7 @@ button:hover::before {
 }
 
 button:hover {
-  box-shadow: 0 0 25px rgba(0, 255, 136, 0.7), 0 0 50px rgba(0, 217, 255, 0.4);
+  box-shadow: 0 0 25px rgba(255, 0, 110, 0.7), 0 0 50px rgba(255, 100, 180, 0.4);
   transform: translateY(-4px) scale(1.05);
   text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }
