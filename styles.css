@@ -1,8 +1,8 @@
 /* ===== VARIABLES Y BASE ===== */
 :root {
-  --accent: #00ff88;
+  --accent: #ff85b3;
   --accent2: #ff006e;
-  --accent3: #00d9ff;
+  --accent3: #ff99b5;
   --muted: #9aa6b2;
   --glass-dark: rgba(30, 30, 46, 0.8);
 }
@@ -33,9 +33,9 @@ body::before {
   width: 100%;
   height: 100%;
   background:
-    radial-gradient(circle at 20% 50%, rgba(0, 255, 136, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 20% 50%, rgba(255, 133, 179, 0.08) 0%, transparent 50%),
     radial-gradient(circle at 80% 80%, rgba(255, 0, 110, 0.06) 0%, transparent 50%),
-    radial-gradient(circle at 30% 20%, rgba(0, 217, 255, 0.05) 0%, transparent 50%);
+    radial-gradient(circle at 30% 20%, rgba(255, 153, 181, 0.05) 0%, transparent 50%);
   pointer-events: none;
   z-index: -1;
   animation: ambientShift 20s ease-in-out infinite;

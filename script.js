@@ -626,12 +626,25 @@ function initTimeIntegration(){
 
 // ===== NAVEGACIÓN DE CAPÍTULOS =====
 function initNavigation(){
+  // Manejo de botones de capítulos antiguos (si aún existen)
   document.querySelectorAll('.chapter-btn').forEach(btn=>{
     btn.addEventListener('click', ()=>{
       const chapter = btn.getAttribute('data-chapter');
       document.querySelectorAll('.chapter').forEach(s=>{ s.classList.remove('active'); });
       document.querySelectorAll('.chapter-btn').forEach(b=>{ b.classList.remove('active'); });
       const targetSection = document.getElementById(chapter);
+      if(targetSection) targetSection.classList.add('active');
+      btn.classList.add('active');
+    });
+  });
+  
+  // Manejo de botones de unidades (nuevo)
+  document.querySelectorAll('.unit-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const unit = btn.getAttribute('data-unit');
+      document.querySelectorAll('.unit-section').forEach(s=>{ s.classList.remove('active'); });
+      document.querySelectorAll('.unit-btn').forEach(b=>{ b.classList.remove('active'); });
+      const targetSection = document.getElementById(unit);
       if(targetSection) targetSection.classList.add('active');
       btn.classList.add('active');
     });
