@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Guía rápida de CFD</title>
+  <meta name="description" content="Introducción y recursos para Computational Fluid Dynamics (CFD)." />
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <h1>Guía rápida de CFD</h1>
+      <p class="tagline">Conceptos, herramientas y recursos para empezar en dinámica de fluidos computacional.</p>
+    </div>
+  </header>
+
+  <main class="container">
+    <section id="overview">
+      <h2>Panorama general</h2>
+      <p>CFD (Computational Fluid Dynamics) es la simulación numérica de fluidos y sus interacciones con superficies. Se usa en ingeniería aeroespacial, automoción, energía, y más.</p>
+      <ul>
+        <li><strong>Modelos:</strong> Navier–Stokes, turbulencia (RANS, LES, DNS).</li>
+        <li><strong>Discretización:</strong> volúmenes finitos, elementos finitos, diferencias finitas.</li>
+        <li><strong>Flujo de trabajo:</strong> preprocesado → resolver → postprocesado.</li>
+      </ul>
+    </section>
+
+    <section id="tools">
+      <h2>Herramientas y software</h2>
+      <p>Ejemplos de software común:</p>
+      <ul>
+        <li><a href="https://www.openfoam.org/" target="_blank" rel="noopener">OpenFOAM</a> — código abierto, widely used en investigación y producción.</li>
+        <li><a href="https://su2code.github.io/" target="_blank" rel="noopener">SU2</a> — conjunto de herramientas para aerodinámica e optimización.</li>
+        <li><a href="https://www.ansys.com/" target="_blank" rel="noopener">ANSYS Fluent</a> — solución comercial, enfoque industrial.</li>
+      </ul>
+    </section>
+
+    <section id="tutorials">
+      <h2>Tutoriales recomendados</h2>
+      <ol>
+        <li>Instalar OpenFOAM y ejecutar tutoriales de canal y cilindro.</li>
+        <li>Aprender diferencias entre RANS y LES con ejemplos simples.</li>
+        <li>Postprocesar resultados con ParaView.</li>
+      </ol>
+    </section>
+
+    <section id="glossary">
+      <h2>Glosario rápido</h2>
+      <dl>
+        <dt>Reynolds (Re)</dt>
+        <dd>Número adimensional que indica relación entre fuerzas inerciales y viscosas.</dd>
+        <dt>RANS</dt>
+        <dd>Promedio de las ecuaciones de Navier–Stokes (modelos de turbulencia usables en ingeniería).</dd>
+      </dl>
+    </section>
+
+    <section id="examples">
+      <h2>Ejemplos de flujo</h2>
+      <p>Selecciona una categoría para ver recursos y enlaces prácticos.</p>
+      <div class="cards" id="cards"></div>
+    </section>
+
+    <section id="resources">
+      <h2>Recursos</h2>
+      <ul>
+        <li><a href="https://www.cfd-online.com/" target="_blank" rel="noopener">CFD Online</a> — foros, tutoriales y documentación.</li>
+        <li><a href="https://www.paraview.org/" target="_blank" rel="noopener">ParaView</a> — visualización y postprocesado.</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <small>Creado para desplegar en Vercel · Contenido educativo</small>
+    </div>
+  </footer>
+
+  <script src="/script.js"></script>
+</body>
+</html>
