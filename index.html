@@ -57,13 +57,44 @@
             <div id="peResult" class="result"></div>
           </div>
 
-          <div class="calc-card">
-            <h3>Convergencia (Orden de exactitud)</h3>
-            <label>Δx inicial: <input id="conv-dx0" type="number" value="0.1" min="0.001" step="0.01" /></label>
-            <label>Número de refinamientos: <input id="conv-refine" type="number" value="4" min="2" max="8" /></label>
-            <label>Orden esperado: <input id="conv-order" type="number" value="2" min="1" max="3" step="0.5" /></label>
-            <button id="calcConv">Mostrar convergencia</button>
-            <canvas id="convCanvas" style="width:100%;height:200px;margin-top:8px;"></canvas>
+        </div>
+      </section>
+
+      <section class="simulator">
+        <h2>Simulador 1D: Advección-Difusión</h2>
+        <div class="sim-controls">
+          <label>Velocidad (u): <input id="sim-u" type="range" min="0" max="2" step="0.1" value="0.5" /></label>
+          <label>Difusividad (α): <input id="sim-alpha" type="range" min="0" max="0.1" step="0.01" value="0.02" /></label>
+          <label>Δt: <input id="sim-dt" type="range" min="0.001" max="0.1" step="0.001" value="0.01" /></label>
+          <button id="simStart">Iniciar</button>
+          <button id="simReset">Reiniciar</button>
+          <span id="simTime" style="font-size:12px;color:var(--muted);">t = 0</span>
+        </div>
+        <canvas id="sim1dCanvas" style="width:100%;height:300px;margin-top:8px;border-radius:6px;"></canvas>
+      </section>
+
+      <section class="stencil">
+        <h2>Visualizador de Stencils (Plantillas de Discretización)</h2>
+        <div class="stencil-grid">
+          <div class="stencil-card">
+            <h4>Central 3-point (2º orden)</h4>
+            <canvas id="stencil3" style="width:100%;height:120px;background:rgba(255,255,255,0.02);border-radius:4px;"></canvas>
+            <small>$\phi' \approx (\phi_{i+1}-\phi_{i-1})/(2\Delta x)$</small>
+          </div>
+          <div class="stencil-card">
+            <h4>Central 5-point (4º orden)</h4>
+            <canvas id="stencil5" style="width:100%;height:120px;background:rgba(255,255,255,0.02);border-radius:4px;"></canvas>
+            <small>orden superior, más puntos</small>
+          </div>
+          <div class="stencil-card">
+            <h4>Upwind (1º orden)</h4>
+            <canvas id="stencilUp" style="width:100%;height:120px;background:rgba(255,255,255,0.02);border-radius:4px;"></canvas>
+            <small>$\phi' \approx (\phi_i-\phi_{i-1})/\Delta x$</small>
+          </div>
+          <div class="stencil-card">
+            <h4>Convergencia (log-log)</h4>
+            <canvas id="convCanvas" style="width:100%;height:120px;background:rgba(255,255,255,0.02);border-radius:4px;"></canvas>
+            <button id="calcConv" style="width:100%;margin-top:4px;">Graficar convergencia</button>
           </div>
         </div>
       </section>

@@ -40,6 +40,20 @@ footer{padding:12px;text-align:center;color:var(--muted)}
 .calc-card button:hover{opacity:0.8}
 .result{padding:8px;background:rgba(86,182,240,0.1);border-left:3px solid var(--accent);border-radius:4px;font-size:13px;color:#dfe8f2}
 
+/* simulador 1D */
+.simulator{max-width:960px;margin:18px auto;padding:12px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border-radius:8px;color:#dfe8f2}
+.sim-controls{display:flex;gap:12px;flex-wrap:wrap;align-items:center;font-size:13px}
+.sim-controls label{display:flex;align-items:center;gap:6px}
+.sim-controls input[type=range]{width:100px}
+.sim-controls button{padding:6px 12px;background:var(--accent);border:none;border-radius:4px;color:#000;font-weight:600;cursor:pointer}
+
+/* stencil */
+.stencil{max-width:960px;margin:18px auto;padding:12px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border-radius:8px;color:#dfe8f2}
+.stencil-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.stencil-card{background:rgba(255,255,255,0.01);padding:8px;border-radius:6px;text-align:center}
+.stencil-card h4{margin:0 0 6px 0;font-size:13px}
+.stencil-card small{display:block;color:var(--muted);font-size:11px;margin-top:4px}
+
 /* estilos para sección de unidades (FAQ / apuntes) */
 .units{max-width:960px;margin:18px auto;padding:12px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border-radius:8px;color:#dfe8f2}
 .units details{margin:8px 0;padding:8px;border-radius:6px;background:rgba(255,255,255,0.01)}
