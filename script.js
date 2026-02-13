@@ -8,20 +8,23 @@ function resize(){
   canvas.width = Math.floor(rect.width * devicePixelRatio);
   canvas.height = Math.floor(rect.height * devicePixelRatio);
   W = canvas.width; H = canvas.height;
+  // reset transform then scale once to handle high-DPI crisply
+  ctx.setTransform(1,0,0,1,0,0);
   ctx.scale(devicePixelRatio, devicePixelRatio);
 }
 
 function rand(min, max){ return Math.random()*(max-min)+min }
 
-function initParticles(n=800){
+function initParticles(n){
   particles.length = 0;
   const rect = canvas.getBoundingClientRect();
+  // adapt particle count to canvas area if not provided
+  if(!n){
+    const area = Math.max(1, rect.width * rect.height);
+    n = Math.min(600, Math.max(120, Math.floor(area / 2000)));
+  }
   for(let i=0;i<n;i++){
-    particles.push({
-      x: Math.random()*rect.width,
-      y: Math.random()*rect.height,
-      age: 0
-    });
+    particles.push({ x: Math.random()*rect.width, y: Math.random()*rect.height, age: 0 });
   }
 }
 
@@ -76,8 +79,6 @@ function step(t){
     ctx.fillRect(p.x, p.y, 1.5, 1.5);
   }
   ctx.globalCompositeOperation = 'source-over';
-
-  requestAnimationFrame(step);
 }
 
 window.addEventListener('resize', ()=>{
@@ -87,7 +88,7 @@ window.addEventListener('resize', ()=>{
 });
 
 document.getElementById('resetBtn').addEventListener('click', ()=>{
-  initParticles(800);
+  initParticles();
 });
 
 // ====== CALCULADORA CFD INTERACTIVA ======
@@ -118,6 +119,7 @@ function drawStencil(canvasId, points, title){
   const ctx = canvas.getContext('2d');
   canvas.width = canvas.offsetWidth * devicePixelRatio;
   canvas.height = canvas.offsetHeight * devicePixelRatio;
+  ctx.setTransform(1,0,0,1,0,0);
   ctx.scale(devicePixelRatio, devicePixelRatio);
   
   const w = canvas.offsetWidth;
@@ -162,6 +164,7 @@ document.getElementById('calcConv').addEventListener('click', ()=>{
   const convCtx = convCanvas.getContext('2d');
   convCanvas.width = convCanvas.offsetWidth * devicePixelRatio;
   convCanvas.height = convCanvas.offsetHeight * devicePixelRatio;
+  convCtx.setTransform(1,0,0,1,0,0);
   convCtx.scale(devicePixelRatio, devicePixelRatio);
   
   const w = convCanvas.offsetWidth;
@@ -279,6 +282,7 @@ function draw1dSim(){
   const ctx = canvas.getContext('2d');
   canvas.width = canvas.offsetWidth * devicePixelRatio;
   canvas.height = canvas.offsetHeight * devicePixelRatio;
+  ctx.setTransform(1,0,0,1,0,0);
   ctx.scale(devicePixelRatio, devicePixelRatio);
   
   const w = canvas.offsetWidth;
@@ -360,8 +364,7 @@ window.addEventListener('load', ()=>{
 
 // initialize flujo
 resize();
-initParticles(800);
-requestAnimationFrame(step);
+initParticles();
 
 // ====== INTERACTIVIDAD ADICIONAL Y EFECTOS ======
 (function(){
@@ -409,7 +412,7 @@ requestAnimationFrame(step);
 
   function spawnBurst(x,y){
     const colors = ['#00ff88','#00d9ff','#ff006e','#ffd166'];
-    for(let i=0;i<40;i++){
+    for(let i=0;i<20;i++){
       const ang = Math.random()*Math.PI*2;
       const speed = Math.random()*4 + 1;
       effects.push({x, y, vx: Math.cos(ang)*speed, vy: Math.sin(ang)*speed - 1.2, life: 1 + Math.random()*0.8, color: colors[i%colors.length], size: 3 + Math.random()*4, rot: Math.random()*360});
@@ -440,8 +443,7 @@ requestAnimationFrame(step);
     // call original step (which clears/fades background and draws particles)
     originalStep(t);
 
-    // draw and update effects
-    ctxLocal.save();
+    // draw and update effects (use save/restore per particle to avoid resetting transform)
     ctxLocal.globalCompositeOperation = 'lighter';
     for(let i=effects.length-1;i>=0;i--){
       const e = effects[i];
@@ -449,14 +451,16 @@ requestAnimationFrame(step);
       e.vx *= 0.995; e.vy *= 0.995;
       e.x += e.vx; e.y += e.vy;
       e.life -= 0.02;
+      ctxLocal.save();
+      ctxLocal.globalAlpha = Math.max(0, Math.min(1, e.life));
       ctxLocal.translate(e.x, e.y);
       ctxLocal.rotate(e.rot * Math.PI/180);
-      ctxLocal.fillStyle = e.color + Math.floor(200*e.life).toString(16);
+      ctxLocal.fillStyle = e.color;
       ctxLocal.fillRect(-e.size/2, -e.size/2, e.size, e.size);
-      ctxLocal.setTransform(1,0,0,1,0,0);
+      ctxLocal.restore();
       if(e.life <= 0) effects.splice(i,1);
     }
-    ctxLocal.restore();
+    ctxLocal.globalCompositeOperation = 'source-over';
 
     requestAnimationFrame(window.step);
   };
@@ -508,3 +512,6 @@ requestAnimationFrame(step);
   // show intro by default
   showChapter('intro');
 })();
+
+// start the optimized animation loop
+requestAnimationFrame(window.step);
