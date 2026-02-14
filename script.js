@@ -1,30 +1,35 @@
 // ===== INICIALIZACIÓN DEL APP =====
-document.addEventListener('DOMContentLoaded', initApp);
-
-function initApp() {
-  if (window._appInitialized) return;
-  window._appInitialized = true;
-  
+document.addEventListener('DOMContentLoaded', function() {
   initTabs();
-  initTutorialCards();
-}
+});
 
 // ===== NAVEGACIÓN DE PESTAÑAS =====
 function initTabs() {
   const tabButtons = document.querySelectorAll('.tab-btn');
   const tabContents = document.querySelectorAll('.tab-content');
   
+  if (tabButtons.length === 0) {
+    console.warn('No tab buttons found');
+    return;
+  }
+  
   tabButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const tabName = btn.getAttribute('data-tab');
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      const tabName = this.getAttribute('data-tab');
       
       // Desactivar todas las pestañas
       tabButtons.forEach(b => b.classList.remove('active'));
       tabContents.forEach(c => c.classList.remove('active'));
       
       // Activar la pestaña seleccionada
-      btn.classList.add('active');
-      document.getElementById(tabName).classList.add('active');
+      this.classList.add('active');
+      const targetSection = document.getElementById(tabName);
+      if (targetSection) {
+        targetSection.classList.add('active');
+      } else {
+        console.warn('Section not found:', tabName);
+      }
     });
   });
 }
