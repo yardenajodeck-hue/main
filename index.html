@@ -11,34 +11,494 @@
         <div class="header-container">
             <h1>🌊 Tutoriales CFD con ANSYS Fluent</h1>
             <p>Configuración de solucionadores, condiciones de contorno y modelos de turbulencia</p>
+            <p class="subtitle">Basado en análisis de 5 tutoriales prácticos de CFD</p>
         </div>
     </header>
 
-    <div class="main-container">
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <h3>📚 Unidades</h3>
-            </div>
-            <nav class="units-menu">
-                <button class="unit-btn active" data-unit="unit2">Unidad 2: Simulación</button>
-                <button class="unit-btn" data-unit="unit3">Unidad 3: Discretización 1D</button>
-                <button class="unit-btn" data-unit="unit4">Unidad 4: Temporal</button>
-                <button class="unit-btn" data-unit="unit5">Unidad 5: Espacial</button>
-                <button class="unit-btn" data-unit="unit6">Unidad 6: Conservación 2D/3D</button>
-                <button class="unit-btn" data-unit="unit7">Unidad 7: Vol.Finitos</button>
-                <button class="unit-btn" data-unit="unit8">Unidad 8: Mallas</button>
-                <button class="unit-btn" data-unit="unit9">Unidad 9: Algoritmos</button>
-                <button class="unit-btn" data-unit="unit10">Unidad 10: Compresibles</button>
-                <button class="unit-btn" data-unit="unit11">Unidad 11: Turbulencia</button>
-                <button class="unit-btn" data-unit="unit12">Unidad 12: RANS</button>
-                <button class="unit-btn" data-unit="unit13">Unidad 13: Cierre RANS</button>
-                <button class="unit-btn" data-unit="unit14">Unidad 14: LES</button>
-                <button class="unit-btn" data-unit="unit15">Unidad 15: Bifásicos</button>
-            </nav>
-        </aside>
+    <nav class="tabs-nav">
+        <button class="tab-btn active" data-tab="tutoriales">📝 Tutoriales</button>
+        <button class="tab-btn" data-tab="turbulencia">🌀 Turbulencia</button>
+        <button class="tab-btn" data-tab="discretizacion">📐 Discretización</button>
+        <button class="tab-btn" data-tab="clasificacion">📊 Clasificación</button>
+    </nav>
 
-        <main class="content">
-            <!-- UNIDAD 2 -->
+    <main class="content-container">
+        <!-- TAB 1: TUTORIALES -->
+        <section id="tutoriales" class="tab-content active">
+            <h2>Los 5 Tutoriales Principales</h2>
+            
+            <div class="tutorial-grid">
+                <!-- Tutorial 1 -->
+                <article class="tutorial-card" onclick="toggleDetails(this)">
+                    <div class="tutorial-header">
+                        <h3>Tutorial 1: Tres Tubos Convergentes</h3>
+                        <span class="expand-icon">+</span>
+                    </div>
+                    <div class="quick-info">
+                        <span class="badge">Pressure-based</span>
+                        <span class="badge">Steady</span>
+                        <span class="badge">Láminar + Heat Transfer</span>
+                    </div>
+                    <div class="tutorial-details">
+                        <h4>🔹 Configuración del Solver</h4>
+                        <p><strong>Pressure-based:</strong> Mejor para flujos a baja velocidad con geometrías complejas</p>
+                        
+                        <h4>🔹 Condiciones de Contorno</h4>
+                        <table class="bc-table">
+                            <tr><th>Elemento</th><th>Tipo</th><th>Valor/Razón</th></tr>
+                            <tr><td>Inlet velocity (5 m/s)</td><td>Dirichlet</td><td>Valor impuesto</td></tr>
+                            <tr><td>Inlet temperature</td><td>Dirichlet</td><td>Valor impuesto</td></tr>
+                            <tr><td>Outlet pressure</td><td>Dirichlet</td><td>Presión impuesta</td></tr>
+                            <tr><td>Wall velocity</td><td>Dirichlet</td><td>No-slip</td></tr>
+                            <tr><td>Adiabatic wall</td><td>Neumann</td><td>Flujo de calor cero</td></tr>
+                            <tr><td>Heated wall (300°C)</td><td>Dirichlet</td><td>Temperatura fija</td></tr>
+                        </table>
+
+                        <h4>🔹 Tipo de Malla</h4>
+                        <p><strong>Unstructured mesh (Tetrahedral)</strong></p>
+                        <ul>
+                            <li>Geometría moderadamente compleja</li>
+                            <li>Sin requisitos estrictos de capas límite</li>
+                            <li>Fácil de generar automáticamente</li>
+                        </ul>
+
+                        <h4>🔹 Esquema de Discretización</h4>
+                        <p><strong>2nd order upwind</strong> - Mejor precisión sin efectos de amortiguamiento</p>
+                    </div>
+                </article>
+
+                <!-- Tutorial 2 -->
+                <article class="tutorial-card" onclick="toggleDetails(this)">
+                    <div class="tutorial-header">
+                        <h3>Tutorial 2: Cilindro Cuadrado 2D (Re ≈ 200)</h3>
+                        <span class="expand-icon">+</span>
+                    </div>
+                    <div class="quick-info">
+                        <span class="badge">Pressure-based</span>
+                        <span class="badge">Transient</span>
+                        <span class="badge">Láminar</span>
+                    </div>
+                    <div class="tutorial-details">
+                        <h4>🔹 Configuración del Solver</h4>
+                        <p><strong>Transient pressure-based:</strong> Esencial para capturar desprendimiento de vórtices</p>
+                        
+                        <h4>🔹 Condiciones de Contorno</h4>
+                        <table class="bc-table">
+                            <tr><th>Elemento</th><th>Tipo</th><th>Descripción</th></tr>
+                            <tr><td>Inlet (1 m/s)</td><td>Dirichlet</td><td>Velocidad especificada</td></tr>
+                            <tr><td>Outlet</td><td>Dirichlet</td><td>Presión (sin reflujo)</td></tr>
+                            <tr><td>Paredes cilindro</td><td>Dirichlet</td><td>No-slip</td></tr>
+                            <tr><td>Top/Bottom</td><td>Mixed</td><td>Free stream</td></tr>
+                        </table>
+
+                        <h4>🔹 Tipo de Malla</h4>
+                        <p><strong>Structured multi-block (Quad elements)</strong></p>
+                        <ul>
+                            <li>Refinamiento no-uniforme cerca del cilindro y la estela</li>
+                            <li>Los vórtices deben capturarse con precisión</li>
+                            <li>Menor difusión numérica que mallas unstructured</li>
+                        </ul>
+
+                        <h4>🔹 Esquema de Discretización</h4>
+                        <p><strong>PISO + 2nd order spatial</strong> - Para transientes con precisión</p>
+                    </div>
+                </article>
+
+                <!-- Tutorial 3 -->
+                <article class="tutorial-card" onclick="toggleDetails(this)">
+                    <div class="tutorial-header">
+                        <h3>Tutorial 3: 3 Cilindros (Overset/Chimera)</h3>
+                        <span class="expand-icon">+</span>
+                    </div>
+                    <div class="quick-info">
+                        <span class="badge">Pressure-based</span>
+                        <span class="badge">Transient</span>
+                        <span class="badge">Overset Mesh</span>
+                    </div>
+                    <div class="tutorial-details">
+                        <h4>🔹 Tipo de Malla (Overset/Chimera)</h4>
+                        <p>Malla de fondo estructurada + malla refinada separada alrededor de cada cilindro</p>
+                        <ul>
+                            <li>Manejo de multi-cuerpos mucho más fácil</li>
+                            <li>Permite movimiento de malla</li>
+                            <li>Refinamiento local independiente</li>
+                            <li>Interconexión con interpolación</li>
+                        </ul>
+
+                        <h4>🔹 Condiciones de Contorno</h4>
+                        <table class="bc-table">
+                            <tr><th>Elemento</th><th>Tipo</th></tr>
+                            <tr><td>Inlet (2 m/s)</td><td>Dirichlet</td></tr>
+                            <tr><td>Outlet</td><td>Dirichlet (presión)</td></tr>
+                            <tr><td>Paredes cilindro</td><td>Dirichlet (no-slip)</td></tr>
+                            <tr><td>Top/Bottom</td><td>Slip (Mixed)</td></tr>
+                            <tr><td>Interfaz Overset</td><td>Interpolación</td></tr>
+                        </table>
+
+                        <h4>🔹 Discretización</h4>
+                        <p><strong>PISO + 2nd order</strong> - Similar a Tutorial 2 pero con interpolación Overset</p>
+                    </div>
+                </article>
+
+                <!-- Tutorial 4 -->
+                <article class="tutorial-card" onclick="toggleDetails(this)">
+                    <div class="tutorial-header">
+                        <h3>Tutorial 4: Salto Supersónico (Mach 3)</h3>
+                        <span class="expand-icon">+</span>
+                    </div>
+                    <div class="quick-info">
+                        <span class="badge">Density-based</span>
+                        <span class="badge">Compresible</span>
+                        <span class="badge">Shock Capture</span>
+                    </div>
+                    <div class="tutorial-details">
+                        <h4>🔹 Configuración del Solver</h4>
+                        <p><strong>Density-based solver:</strong> Los solucionadores basados en presión luchan contra shocks</p>
+                        <ul>
+                            <li>Ecuaciones acopladas densidad-presión-temperatura</li>
+                            <li>CFL ≈ 1</li>
+                            <li>Numeradores de alta velocidad</li>
+                        </ul>
+
+                        <h4>🔹 Condiciones de Contorno</h4>
+                        <table class="bc-table">
+                            <tr><th>Elemento</th><th>Tipo</th><th>Descripción</th></tr>
+                            <tr><td>Inlet (Mach 3)</td><td>Dirichlet</td><td>Mach, presión, temperatura</td></tr>
+                            <tr><td>Outlet</td><td>Dirichlet</td><td>Presión de salida</td></tr>
+                            <tr><td>Top/Bottom</td><td>Symmetry</td><td>Simetría</td></tr>
+                            <tr><td>Obstáculo</td><td>Inviscid/RANS</td><td>Pared sin viscosidad o RANS</td></tr>
+                        </table>
+
+                        <h4>🔹 Tipo de Malla</h4>
+                        <p><strong>Structured multi-block con refinamiento de shock</strong></p>
+                        <ul>
+                            <li>Altamente refinado cerca del paso y onda expansiva</li>
+                            <li>Sesgado no-uniforme</li>
+                            <li>Alineación de malla crítica para resolución de shocks</li>
+                        </ul>
+
+                        <h4>🔹 Discretización</h4>
+                        <p><strong>Density-based 2nd order</strong> - Balance óptimo entre precisión y capturas de shocks</p>
+                    </div>
+                </article>
+
+                <!-- Tutorial 5 -->
+                <article class="tutorial-card" onclick="toggleDetails(this)">
+                    <div class="tutorial-header">
+                        <h3>Tutorial 5: Cilindro Turbulento (RANS)</h3>
+                        <span class="expand-icon">+</span>
+                    </div>
+                    <div class="quick-info">
+                        <span class="badge">Pressure-based</span>
+                        <span class="badge">RANS Turbulent</span>
+                        <span class="badge">y+ Control</span>
+                    </div>
+                    <div class="tutorial-details">
+                        <h4>🔹 Configuración del Solver</h4>
+                        <p><strong>Pressure-based con modelos RANS</strong></p>
+                        <p>Modelos de turbulencia: Spalart-Allmaras, k-ε, k-ω, k-ω SST</p>
+
+                        <h4>🔹 Control de y+ (Resolución de Malla Cercanía a Pared)</h4>
+                        <table class="bc-table">
+                            <tr><th>Modelo RANS</th><th>y+ Requerido</th><th>Descripción</th></tr>
+                            <tr><td>k-ω SST</td><td>≈ 1</td><td>Bajo y+ para captura de capa límite</td></tr>
+                            <tr><td>k-ε</td><td>30-300</td><td>Funciones de pared permitidas</td></tr>
+                            <tr><td>Spalart-Allmaras</td><td>~1</td><td>Wall distance tracking</td></tr>
+                        </table>
+
+                        <h4>🔹 Tipo de Malla</h4>
+                        <p><strong>Structured o Overset con refinamiento cercano a pared</strong></p>
+                        <ul>
+                            <li>Capas de elementos en la capa límite</li>
+                            <li>y+ controlado según modelo elegido</li>
+                            <li>Refinamiento en región de estela para capturar vórtices</li>
+                        </ul>
+
+                        <h4>🔹 Discretización</h4>
+                        <p><strong>2nd order upwind</strong> - Mayor precisión con menores efectos de difusión</p>
+                    </div>
+                </article>
+            </div>
+
+            <div class="summary-table">
+                <h3>📊 Resumen Comparativo de los 5 Tutoriales</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Caso</th>
+                            <th>Solver</th>
+                            <th>Tipo de Flujo</th>
+                            <th>Condiciones Contorno</th>
+                            <th>Malla</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>3 Tubos</td>
+                            <td>Pressure-based</td>
+                            <td>Steady laminar</td>
+                            <td>Dirichlet + Neumann</td>
+                            <td>Unstructured (Tet)</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>Cilindro 2D</td>
+                            <td>Pressure-based</td>
+                            <td>Transient laminar</td>
+                            <td>Dirichlet + Mixed</td>
+                            <td>Structured (Multi-block Quad)</td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>3 Cilindros</td>
+                            <td>Pressure-based</td>
+                            <td>Transient laminar</td>
+                            <td>Dirichlet + Mixed + Overset</td>
+                            <td>Overset (Chimera)</td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>Supersónico</td>
+                            <td>Density-based</td>
+                            <td>Compressible (Mach 3)</td>
+                            <td>Dirichlet + Symmetry</td>
+                            <td>Structured (Multiblock)</td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td>Cilindro RANS</td>
+                            <td>Pressure-based</td>
+                            <td>RANS turbulent</td>
+                            <td>Dirichlet + Mixed</td>
+                            <td>Structured / Overset</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- TAB 2: TURBULENCIA -->
+        <section id="turbulencia" class="tab-content">
+            <h2>Modelos de Turbulencia en ANSYS Fluent</h2>
+            
+            <div class="models-container">
+                <!-- k-omega SST -->
+                <div class="model-card special">
+                    <h3>🏆 k-ω SST (Shear Stress Transport)</h3>
+                    <div class="properties">
+                        <p><strong>Tipo:</strong> Two-equation hybrid model (k-ε + k-ω)</p>
+                        <p><strong>Rating:</strong> ⭐⭐⭐⭐⭐ MÁS UTILIZADO EN INDUSTRIA</p>
+                        <p><strong>Wall resolved:</strong> y+ ≈ 1</p>
+                    </div>
+                    <h4>Características Clave:</h4>
+                    <ul>
+                        <li>✅ Combina lo mejor de k-ε y k-ω</li>
+                        <li>✅ Predicción precisa de separación</li>
+                        <li>✅ Manejo excepcional de gradientes de presión adversos</li>
+                        <li>✅ Funciona bien con mallas de bajo y+</li>
+                        <li>✅ Más robusto que k-ω puro</li>
+                    </ul>
+                    <h4>La Opción Más Segura Para:</h4>
+                    <ul>
+                        <li><strong>Aerodinámica externa</strong></li>
+                        <li><strong>Cuerpos romos</strong> - Cilindros, cubos</li>
+                        <li><strong>Propósito general RANS</strong></li>
+                    </ul>
+                </div>
+
+                <!-- k-epsilon -->
+                <div class="model-card">
+                    <h3>⚙️ k-ε Model</h3>
+                    <p><strong>Tipo:</strong> Two-equation model | <strong>Variantes:</strong> Standard, RNG, Realizable</p>
+                    <h4>Características:</h4>
+                    <ul>
+                        <li>Robusto y confiable</li>
+                        <li>Muy utilizado en industria</li>
+                        <li>Requiere funciones de pared (y+ = 30-300)</li>
+                        <li>Pobre precisión cerca de paredes</li>
+                    </ul>
+                </div>
+
+                <!-- LES -->
+                <div class="model-card">
+                    <h3>🌊 LES - Large Eddy Simulation</h3>
+                    <p><strong>Tipo:</strong> Estructuras grandes resueltas, pequeñas modeladas</p>
+                    <h4>Ventajas:</h4>
+                    <ul>
+                        <li>Bueno para flujos con separación compleja</li>
+                        <li>Captura variación ciclo-a-ciclo</li>
+                        <li>Mayor precisión que RANS</li>
+                    </ul>
+                    <h4>Desventajas:</h4>
+                    <ul>
+                        <li>Muy costoso computacionalmente</li>
+                        <li>Sensible a condiciones de entrada</li>
+                    </ul>
+                </div>
+
+                <!-- Spalart-Allmaras -->
+                <div class="model-card">
+                    <h3>✈️ Spalart-Allmaras (SA)</h3>
+                    <p><strong>Tipo:</strong> One-equation model | <strong>Costo:</strong> Muy económico</p>
+                    <h4>Características:</h4>
+                    <ul>
+                        <li>Diseñado para aerodinámica externa</li>
+                        <li>Muy robusto en flujos adherentes</li>
+                        <li>Pobre para separación fuerte</li>
+                    </ul>
+                </div>
+
+                <!-- DES -->
+                <div class="model-card">
+                    <h3>🔄 DES - Detached Eddy Simulation</h3>
+                    <p><strong>Tipo:</strong> Hybrid RANS-LES | <strong>Características:</strong> RANS en pared, LES para separación</p>
+                    <h4>Ventajas:</h4>
+                    <ul>
+                        <li>Buen compromiso costo-precisión</li>
+                        <li>Captura estructuras vorticosas dinámicas</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 3: DISCRETIZACIÓN -->
+        <section id="discretizacion" class="tab-content">
+            <h2>Esquemas de Discretización</h2>
+            
+            <div class="discretization-content">
+                <h3>🔷 Discretización Espacial para Convección</h3>
+                
+                <div class="scheme-card special">
+                    <h4>2nd Order Upwind (RECOMENDADO)</h4>
+                    <p><strong>Orden:</strong> Second-order | <strong>Balance:</strong> Estable + Preciso</p>
+                    <p><strong>Uso en Tutoriales:</strong> ✅ Tutoriales 1, 2, 3, 5</p>
+                    <p>Mejor precisión que UDS sin excesiva inestabilidad. Menos difusivo que first-order.</p>
+                </div>
+
+                <h3>🔷 Discretización Temporal</h3>
+
+                <table class="discretization-table">
+                    <thead>
+                        <tr>
+                            <th>Tutorial</th>
+                            <th>Tipo de Flujo</th>
+                            <th>Discretización Espacial</th>
+                            <th>Acoplamiento P-V</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>Steady Laminar</td>
+                            <td>2nd order upwind</td>
+                            <td>SIMPLE</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>Transient Laminar</td>
+                            <td>2nd order upwind</td>
+                            <td>PISO</td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>Transient Laminar</td>
+                            <td>2nd order upwind</td>
+                            <td>PISO</td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>Compressible (Mach 3)</td>
+                            <td>2nd order + shock capturing</td>
+                            <td>Density-based</td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td>Transient RANS</td>
+                            <td>2nd order upwind</td>
+                            <td>PISO</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- TAB 4: CLASIFICACIÓN GLOBAL -->
+        <section id="clasificacion" class="tab-content">
+            <h2>Clasificación Global de Métodos CFD</h2>
+            
+            <div class="classification-grid">
+                <div class="classification-box">
+                    <h3>1️⃣ Niveles de Modelamiento Físico</h3>
+                    <div class="hierarchy">
+                        <div class="level">
+                            <span class="level-name">DNS</span>
+                            <span class="description">Resolución total (muy costoso)</span>
+                        </div>
+                        <div class="arrow">⬇</div>
+                        <div class="level">
+                            <span class="level-name">LES</span>
+                            <span class="description">Grandes estructuras resueltas</span>
+                        </div>
+                        <div class="arrow">⬇</div>
+                        <div class="level">
+                            <span class="level-name">RANS</span>
+                            <span class="description">Solo media promediada</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="classification-box">
+                    <h3>2️⃣ Métodos Numéricos</h3>
+                    <ul>
+                        <li><strong>Finite Difference (FD):</strong> Nodos, Taylor expansion</li>
+                        <li><strong>Finite Volume Method (FVM):</strong> Conservativo, mallas no-estructuradas</li>
+                        <li><strong>Finite Element (FEM):</strong> Flexible pero costoso</li>
+                    </ul>
+                    <p style="margin-top:10px; padding:10px; background:rgba(0,150,200,0.1); border-left:3px solid #0096c8;">
+                        <strong>Enfoque Principal:</strong> Finite Volume Method
+                    </p>
+                </div>
+
+                <div class="classification-box">
+                    <h3>3️⃣ Tipos de Mallas</h3>
+                    <ul>
+                        <li><strong>Structured:</strong> Regular, eficiente, menos flexible</li>
+                        <li><strong>Unstructured:</strong> Flexible, triángulos/tetraedros</li>
+                        <li><strong>Hybrid:</strong> Combinación</li>
+                        <li><strong>Overset:</strong> Mallas superpuestas</li>
+                    </ul>
+                </div>
+
+                <div class="classification-box">
+                    <h3>4️⃣ Regímenes de Flujo</h3>
+                    <ul>
+                        <li><strong>Laminar:</strong> Sin turbulencia (Tutoriales 1-3)</li>
+                        <li><strong>Turbulent:</strong> Con fluctuaciones (Tutorial 5)</li>
+                        <li><strong>Incompressible:</strong> ρ constante (Tutoriales 1-3, 5)</li>
+                        <li><strong>Compressible:</strong> ρ variable (Tutorial 4)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <h3>📌 Conclusión en Una Frase</h3>
+                <p style="font-size:1.1em; font-weight:bold; padding:20px; background:rgba(255,0,110,0.1); border-left:4px solid #ff006e; border-radius:4px;">
+                    CFD es una jerarquía que va desde leyes de conservación → discretización (FVM) → modelamiento de turbulencia (DNS/LES/RANS) → algoritmos de solución → fenómenos multifásicos.
+                </p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="main-footer">
+        <p>📚 Tutoriales de CFD con ANSYS Fluent | Basado en conversación con ChatGPT | Optimizado para Vercel</p>
+        <p>Configuración de solucionadores • Condiciones de contorno • Modelos de turbulencia • Esquemas de discretización</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
             <section id="unit2" class="unit-section active">
                 <h2>Unidad 2: Simulación de ejemplo</h2>
                 <div class="unit-grid">

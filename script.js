@@ -1,21 +1,103 @@
-// ===== ESPERAR A QUE CARGUE EL DOM =====
+// ===== INICIALIZACIÓN DEL APP =====
 document.addEventListener('DOMContentLoaded', initApp);
 
-function initApp(){
-  if(window._appInitialized) return;
+function initApp() {
+  if (window._appInitialized) return;
   window._appInitialized = true;
-  initFlowAnimation();
-  initCalculators();
-  initStencils();
-  initSimpleSimulator();
-  initTimeIntegration();
-  initNavigation();
+  
+  initTabs();
+  initTutorialCards();
 }
 
-// ===== ANIMACIÓN DE FLUJO =====
+// ===== NAVEGACIÓN DE PESTAÑAS =====
+function initTabs() {
+  const tabButtons = document.querySelectorAll('.tab-btn');
+  const tabContents = document.querySelectorAll('.tab-content');
+  
+  tabButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const tabName = btn.getAttribute('data-tab');
+      
+      // Desactivar todas las pestañas
+      tabButtons.forEach(b => b.classList.remove('active'));
+      tabContents.forEach(c => c.classList.remove('active'));
+      
+      // Activar la pestaña seleccionada
+      btn.classList.add('active');
+      document.getElementById(tabName).classList.add('active');
+    });
+  });
+}
+
+// ===== TOGGLEAR DETALLES DE TUTORIALES =====
+function toggleDetails(card) {
+  card.classList.toggle('expanded');
+}
+
+// ===== SCROLL SUAVE =====
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+  anchor.addEventListener('click', function (e) {
+    e.preventDefault();
+    const target = document.querySelector(this.getAttribute('href'));
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth' });
+    }
+  });
+});
+
+
+// ===== ANIMACIÓN DE FLUJO (obsoleto, mantenido para compatibilidad) =====
 function initFlowAnimation(){
-  const canvas = document.getElementById('flowCanvas');
-  if(!canvas) return;
+  // Esta función ya no se usa en la nueva página
+}
+
+// ===== CALCULADORAS (obsoleto) =====
+function initCalculators(){
+  // Esta función ya no se usa en la nueva página
+}
+
+// ===== STENCILS (obsoleto) =====
+function initStencils(){
+  // Esta función ya no se usa en la nueva página
+}
+
+// ===== SIMULADOR RÁPIDO (obsoleto) =====
+function initSimpleSimulator(){
+  // Esta función ya no se usa en la nueva página
+}
+
+// ===== INTEGRACIÓN TEMPORAL (obsoleto) =====
+function initTimeIntegration(){
+  // Esta función ya no se usa en la nueva página
+}
+
+// ===== NAVEGACIÓN DE CAPÍTULOS (actualizado) =====
+function initNavigation(){
+  // Manejo de botones de capítulos antiguos (si aún existen)
+  document.querySelectorAll('.chapter-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const chapter = btn.getAttribute('data-chapter');
+      document.querySelectorAll('.chapter').forEach(s=>{ s.classList.remove('active'); });
+      document.querySelectorAll('.chapter-btn').forEach(b=>{ b.classList.remove('active'); });
+      const targetSection = document.getElementById(chapter);
+      if(targetSection) targetSection.classList.add('active');
+      btn.classList.add('active');
+    });
+  });
+  
+  // Manejo de botones de unidades (nuevo)
+  document.querySelectorAll('.unit-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const unit = btn.getAttribute('data-unit');
+      document.querySelectorAll('.unit-section').forEach(s=>{ s.classList.remove('active'); });
+      document.querySelectorAll('.unit-btn').forEach(b=>{ b.classList.remove('active'); });
+      const targetSection = document.getElementById(unit);
+      if(targetSection) targetSection.classList.add('active');
+      btn.classList.add('active');
+    });
+  });
+}
+
   
   const ctx = canvas.getContext('2d');
   const particles = [];
